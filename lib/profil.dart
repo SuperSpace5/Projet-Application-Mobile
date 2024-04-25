@@ -5,7 +5,6 @@ import 'package:mobile_home_and_paradise/accueil.dart';
 import 'package:mobile_home_and_paradise/reservations.dart';
 import 'contact2.dart';
 import 'code.dart';
-import 'nfc.dart'; // Import de la page NFC
 
 void main() {
   runApp(MyApp());
@@ -100,17 +99,6 @@ class ProfilPage extends StatelessWidget {
                             );
                           },
                           child: const Text('Code'),
-                        ),
-                        // Bouton "NFC" pour aller vers la page NFC
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => NFCPage()),
-                            );
-                          },
-                          child: const Text('NFC'),
                         ),
                       ],
                     );
