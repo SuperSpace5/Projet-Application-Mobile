@@ -48,22 +48,24 @@ class AccueilPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            Image.asset('assets/images/logo.png', width: 300), // Affichage du logo
+            Image.asset('assets/images/logo.png',
+                width: 300), // Affichage du logo
             const SizedBox(height: 20),
             Container(
               width: MediaQuery.of(context).size.width,
               color: Colors.lightBlueAccent,
               child: AspectRatio(
                 aspectRatio: 16 / 9,
-                child: VideoPlayerWidget(), // Widget pour la lecture de la vidéo
+                child:
+                    VideoPlayerWidget(), // Widget pour la lecture de la vidéo
               ),
             ),
             const SizedBox(height: 20),
             const Text(
-              'Bienvenue sur notre application mobile\nConnectez-vous pour avoir accès à votre Mobile-Home',
+              'Bienvenue sur notre application mobile !\n\nConnectez-vous pour avoir accès\n à votre Mobile-Home',
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 19,
                   color: Colors.black,
                   fontWeight: FontWeight.bold), // Mise en gras du texte
             ),
@@ -73,14 +75,17 @@ class AccueilPage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFFd9edf7), // Couleur du bas de la navigation
+        backgroundColor:
+            const Color(0xFFd9edf7), // Couleur du bas de la navigation
         items: [
           BottomNavigationBarItem(
             icon: GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ContactPage()), // Navigation vers la page de contact
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ContactPage()), // Navigation vers la page de contact
                 );
               },
               child: Image.asset('assets/images/navigation/contact.png',
@@ -93,11 +98,13 @@ class AccueilPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ConnexionPage()), // Navigation vers la page de connexion
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ConnexionPage()), // Navigation vers la page de connexion
                 );
               },
-              child:
-                  Image.asset('assets/images/navigation/compte.png', width: 30), // Icône pour la page de connexion
+              child: Image.asset('assets/images/navigation/compte.png',
+                  width: 30), // Icône pour la page de connexion
             ),
             label: 'Connexion', // Libellé de l'élément de navigation
           ),
@@ -115,7 +122,8 @@ class VideoPlayerWidget extends StatefulWidget {
 
 // Classe _VideoPlayerWidgetState, état du widget VideoPlayerWidget
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  late VideoPlayerController _controller; // Contrôleur pour la lecture de la vidéo
+  late VideoPlayerController
+      _controller; // Contrôleur pour la lecture de la vidéo
 
   @override
   void initState() {
@@ -125,6 +133,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       ..initialize().then((_) {
         // Démarrer automatiquement la lecture une fois la vidéo initialisée
         _controller.play();
+        // Configurer la boucle infinie de la vidéo
+        _controller.setLooping(true);
         setState(() {});
       });
   }

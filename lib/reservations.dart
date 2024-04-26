@@ -32,6 +32,7 @@ class MyApp extends StatelessWidget {
 enum EtatReservation {
   actif, // Réservation active.
   terminer, // Réservation terminée.
+  confirmer, // Réservation confirmée.
   annuler, // Réservation annulée.
 }
 
@@ -53,11 +54,100 @@ class ReservationPage extends StatelessWidget {
     ),
     Reservation(
       lieu: "Mobil Home - n°3",
+      dateDebut: DateTime(2024, 07, 08),
+      dateFin: DateTime(2024, 07, 15),
+      etat: EtatReservation.confirmer,
+    ),
+    Reservation(
+      lieu: "Mobil Home - n°4",
       dateDebut: DateTime(2024, 08, 05),
       dateFin: DateTime(2024, 08, 10),
       etat: EtatReservation.annuler,
     ),
   ];
+
+  Future<void> _showReservationDetails(
+      BuildContext context, Reservation reservation) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            reservation.lieu, // Modifiez cette ligne
+            style: const TextStyle(
+                fontWeight: FontWeight.bold), // Ajoutez cette ligne
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Date de début : ${_getFullDate(reservation.dateDebut)}'), // Modifiez cette ligne
+                Text(
+                    'Date de fin : ${_getFullDate(reservation.dateFin)}'), // Modifiez cette ligne
+                Text(
+                  'État : ${_getTextEtat(reservation.etat)}\n', // Modifiez cette ligne
+                  style: TextStyle(
+                    color: _getColorEtat(reservation.etat),
+                    fontWeight: FontWeight.bold, // Ajoutez cette ligne
+                  ),
+                ),
+                Text(
+                  'Réservation faite le : ${_getFullDate(DateTime(2024, 01, 17))}', // Ajoutez cette ligne
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.red, // Couleur de fond rouge
+                  borderRadius: BorderRadius.circular(8), // Bords arrondis
+                ),
+                padding: const EdgeInsets.all(
+                    10), // Espacement intérieur du container
+                child: const Text(
+                  'Annuler',
+                  style: TextStyle(
+                    color: Colors.white, // Couleur du texte en blanc
+                    fontWeight: FontWeight.bold, // Police en gras
+                  ),
+                ),
+              ),
+              onPressed: () {
+                // Action à effectuer lors de l'annulation
+              },
+            ),
+            TextButton(
+              child: const Text('Fermer'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _getFullDate(DateTime date) {
+    final days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    final months = [
+      'Jan',
+      'Fév',
+      'Mar',
+      'Avr',
+      'Mai',
+      'Juin',
+      'Juil',
+      'Août',
+      'Sept',
+      'Oct',
+      'Nov',
+      'Déc'
+    ];
+    return '${days[date.weekday - 1]} ${date.day.toString().padLeft(2, '0')} ${months[date.month - 1]} ${date.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +158,7 @@ class ReservationPage extends StatelessWidget {
         title: Row(
           children: [
             // Image affichée à gauche du titre.
-            Image.asset('assets/images/navigation/compte.png', width: 20),
+            Image.asset('assets/images/navigation/reservation.png', width: 20),
             const SizedBox(width: 8), // Espace entre l'image et le texte.
             const Text(
               'Mes réservations', // Texte du titre.
@@ -80,41 +170,102 @@ class ReservationPage extends StatelessWidget {
             0xFFd9d9d9), // Couleur de fond de la barre d'applications.
       ),
       // Corps de la page contenant la liste des réservations.
-      body: ListView.builder(
-        itemCount: reservations.length, // Nombre d'éléments dans la liste.
-        // Constructeur de chaque élément de la liste.
-        itemBuilder: (context, index) {
-          return Card(
-            elevation: 2, // Élévation de la carte.
-            margin: const EdgeInsets.symmetric(
-                vertical: 8, horizontal: 16), // Marge de la carte.
-            child: ListTile(
-              // Élément de la liste représentant une réservation.
-              title: Text(
-                reservations[index].lieu, // Lieu de la réservation.
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold), // Style du texte.
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    // Texte affichant la période de la réservation.
-                    'Du ${reservations[index].dateDebut.day.toString().padLeft(2, '0')}/${reservations[index].dateDebut.month.toString().padLeft(2, '0')}/${reservations[index].dateDebut.year} au ${reservations[index].dateFin.day.toString().padLeft(2, '0')}/${reservations[index].dateFin.month.toString().padLeft(2, '0')}/${reservations[index].dateFin.year}',
-                  ),
-                  Text(
-                    // Texte affichant l'état de la réservation.
-                    'État: ${_getTextEtat(reservations[index].etat)}',
+      body: Column(
+        children: [
+          // Case de lexique
+          const Card(
+            elevation: 2,
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListTile(
+                  title: Text(
+                    'Lexique des états de réservation : ',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: _getColorEtat(reservations[index].etat),
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline),
+                  ),
+                ),
+                ListTile(
+                  title: Text(
+                    'Actif - La réservation est actuellement active',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green),
+                  ),
+                ),
+                ListTile(
+                  title: Text(
+                    'Terminé - La réservation a été effectuée',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
+                ),
+                ListTile(
+                  title: Text(
+                    'Confirmé - La réservation a été confirmée',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange),
+                  ),
+                ),
+                ListTile(
+                  title: Text(
+                    'Annulé - La réservation a été annulée',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Liste des réservations
+          Expanded(
+            child: ListView.builder(
+              itemCount: reservations.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    _showReservationDetails(context, reservations[index]);
+                  },
+                  child: Card(
+                    elevation: 2,
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    child: ListTile(
+                      title: Text(
+                        reservations[index].lieu,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Du ${reservations[index].dateDebut.day.toString().padLeft(2, '0')}/${reservations[index].dateDebut.month.toString().padLeft(2, '0')}/${reservations[index].dateDebut.year} au ${reservations[index].dateFin.day.toString().padLeft(2, '0')}/${reservations[index].dateFin.month.toString().padLeft(2, '0')}/${reservations[index].dateFin.year}',
+                          ),
+                          Text(
+                            'État: ${_getTextEtat(reservations[index].etat)}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: _getColorEtat(reservations[index].etat),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
@@ -123,11 +274,13 @@ class ReservationPage extends StatelessWidget {
   String _getTextEtat(EtatReservation etat) {
     switch (etat) {
       case EtatReservation.actif:
-        return 'Actif';
+        return 'Active';
       case EtatReservation.terminer:
-        return 'Terminé';
+        return 'Terminée';
+      case EtatReservation.confirmer:
+        return 'Confirmée';
       case EtatReservation.annuler:
-        return 'Annulé';
+        return 'Annulée';
     }
   }
 
@@ -138,6 +291,8 @@ class ReservationPage extends StatelessWidget {
         return Colors.green;
       case EtatReservation.terminer:
         return Colors.black;
+      case EtatReservation.confirmer:
+        return Colors.orange;
       case EtatReservation.annuler:
         return Colors.red;
     }

@@ -82,27 +82,9 @@ class ProfilPage extends StatelessWidget {
           BottomNavigationBarItem(
             icon: GestureDetector(
               onTap: () {
-                // Affichage d'une boîte de dialogue avec les options Code et NFC
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("Choisir une option"),
-                      actions: <Widget>[
-                        // Bouton "Code" pour aller vers la page Code
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CodePage()),
-                            );
-                          },
-                          child: const Text('Code'),
-                        ),
-                      ],
-                    );
-                  },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CodePage()),
                 );
               },
               child:
