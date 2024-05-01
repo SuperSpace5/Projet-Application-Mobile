@@ -2,6 +2,7 @@
 // ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,6 +10,19 @@ import 'package:crypto/crypto.dart';
 import 'creercompte.dart'; // Importe le fichier creercompte.dart ici
 import 'mdpoublie.dart'; // Importe le fichier mdpoublie.dart ici
 import 'profil.dart'; // Importe le fichier profil.dart ici
+import 'package:shared_preferences/shared_preferences.dart'; // Importez la bibliothèque shared_preferences
+
+// Déclaration et initialisation de la variable cookie
+String cookie =
+    ""; // Vous pouvez initialiser cookie avec une valeur par défaut si nécessaire
+
+// Fonction pour générer un identifiant de session
+String generateSessionId({int length = 32}) {
+  const charset = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  final random = Random.secure();
+  return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+      .join();
+}
 
 // Fonction principale du programme Flutter
 void main() {
@@ -192,13 +206,16 @@ class _ConnexionPageState extends State<ConnexionPage> {
 
     // URL de l'API pour la connexion
     String apiUrl =
-        'http://192.168.10.84:8080/account/mobile/login_form_mobile';
+        'http://192.168.95.84:8080/account/mobile/login_form_mobile';
 
     // Envoi du formulaire de connexion
     String resultCode = await _sendLoginForm(email, hashedPassword, apiUrl);
 
     // Traitement des résultats de la connexion
     if (resultCode == '0102') {
+      // Création et enregistrement du cookie de session
+      _saveSessionCookie();
+
       // Rediriger vers la page de profil si la réponse est valide
       Navigator.pushReplacement(
         context,
@@ -221,6 +238,13 @@ class _ConnexionPageState extends State<ConnexionPage> {
     } else if (resultCode == '0010') {
       _showErrorDialog(context, "Le chiffrement du mot de passe est absent");
     }
+  }
+
+  // Fonction pour enregistrer le cookie de session
+  void _saveSessionCookie() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    cookie = generateSessionId(); // Générer un nouvel identifiant de session
+    await prefs.setString('session_cookie', cookie);
   }
 
   // Fonction pour hacher le mot de passe

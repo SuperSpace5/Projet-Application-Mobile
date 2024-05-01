@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart'; // Package pour le hachage des mots de passe
+import 'connexion.dart';
 
 // Fonction principale pour exécuter l'application Flutter
 void main() {
@@ -231,7 +232,7 @@ class _CreerComptePageState extends State<CreerComptePage> {
     String hashedPassword = _hashPassword(password);
 
     // URL de l'API pour la création de compte
-    String apiUrl = 'http://192.168.10.84:8080/account/creationCompte_form';
+    String apiUrl = 'http://192.168.95.84:8080/account/creationCompte_form';
 
     // Envoi du formulaire et réception du résultat
     String resultCode = await _sendLoginForm(
@@ -357,6 +358,9 @@ class _CreerComptePageState extends State<CreerComptePage> {
         // Fermer la boîte de dialogue après un délai
         Future.delayed(const Duration(seconds: 99), () {
           Navigator.of(context).pop(true);
+          // Rediriger vers la page de connexion (connexion.dart)
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => ConnexionPage()));
         });
         return AlertDialog(
           title: const Text("Succès"), // Titre de la boîte de dialogue
@@ -365,6 +369,9 @@ class _CreerComptePageState extends State<CreerComptePage> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Fermer la boîte de dialogue
+                // Rediriger vers la page de connexion (connexion.dart)
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => ConnexionPage()));
               },
               child: const Text(
                   "OK"), // Texte du bouton pour fermer la boîte de dialogue

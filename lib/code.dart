@@ -85,7 +85,25 @@ class _CodePageState extends State<CodePage> {
             ElevatedButton(
               // Bouton "Demander Code d'accès"
               onPressed: () {
-                // Ajouter code demander le code d'accès (attente api)
+                generateCode(); // Appel de la fonction pour générer le code
+                showDialog(
+                  // Afficher une pop-up avec le code généré
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Code d\'accès'),
+                      content: const Text('Votre code d\'accès est : '),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Fermer la pop-up
+                          },
+                          child: const Text('Fermer'),
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
               child: const Text('Demander Code d\'accès'),
             ),

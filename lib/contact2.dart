@@ -59,7 +59,7 @@ class ContactPage2 extends StatelessWidget {
               child: Text(
                 'En cas de problèmes, veuillez nous contacter via :', // Message d'information
                 style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 20,
                     color: Colors.black,
                     fontWeight: FontWeight.bold), // Style du texte
                 textAlign: TextAlign.center, // Alignement du texte
@@ -69,7 +69,7 @@ class ContactPage2 extends StatelessWidget {
             const Text(
               'Adresse E-mail : mobilehomeparadis@gmail.com\n\nTéléphone : 06.85.85.85.85\n\nAdresse Camping : 123 Rue des Mobiles Homes, 11170 Gruissan', // Informations de contact
               style: TextStyle(
-                  fontSize: 20, color: Colors.black), // Style du texte
+                  fontSize: 16, color: Colors.black), // Style du texte
               textAlign: TextAlign.center, // Alignement du texte
             ),
             const SizedBox(height: 20),

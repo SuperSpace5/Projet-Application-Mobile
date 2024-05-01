@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
       // Utilisation de Future.any pour envoyer une requête ping à l'API avec une limite de temps
       final response = await Future.any([
         http.get(Uri.parse(
-            'http://192.168.10.84:8080/test/ping')), // Envoi d'une requête ping à l'adresse spécifiée
+            'http://192.168.137.3:8080/test/ping')), // Envoi d'une requête ping à l'adresse spécifiée
         Future.delayed(const Duration(seconds: 5))
             .then((_) => throw 'Timeout'), // Limite de temps de 5 secondes
       ]);
