@@ -2,21 +2,21 @@
 
 ## Version V1.3
 
-Page d'Accueil et Page de Contact
+### Page d'Accueil et Page de Contact
 - Correction mineures
 
-Page d'Accès Mobile Home
+### Page d'Accès Mobile Home
 - Ajout pop-up pour le bouton "Demander Code d'Accès"
 
-Page de Connexion (/!\ en cours)
+### Page de Connexion (/!\ en cours)
 - Création et stockage du cookie de session
 
-Page de Profil (/!\ en cours)
+### Page de Profil (/!\ en cours)
 - Vérification du cookie de session
 - Affichage des informations du compte
 - Suppression du cookie de session lors de la déconnection
 
-Page de Réservation (/!\ en cours=
+### Page de Réservation (/!\ en cours=
 - Correction mineures
 - Ajout Bouton pour réserver un mobil-home
 - Ajout Pop-up les Mobile-Homes de disponible
