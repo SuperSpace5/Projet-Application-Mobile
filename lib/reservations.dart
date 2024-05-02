@@ -1,4 +1,4 @@
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, sort_child_properties_last, deprecated_member_use
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, sort_child_properties_last, deprecated_member_use, avoid_function_literals_in_foreach_calls
 
 import 'package:flutter/material.dart';
 
@@ -91,6 +91,8 @@ class _ReservationPageState extends State<ReservationPage> {
 
   @override
   Widget build(BuildContext context) {
+    _updateReservationStatus(); // Mettre à jour l'état des réservations chaque fois que la page est construite
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -214,6 +216,20 @@ class _ReservationPageState extends State<ReservationPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
+  }
+
+  void _updateReservationStatus() {
+    DateTime today = DateTime.now();
+    reservations.forEach((reservation) {
+      if (today.year == reservation.dateDebut.year &&
+          today.month == reservation.dateDebut.month &&
+          today.day == reservation.dateDebut.day &&
+          reservation.etat == EtatReservation.confirmer) {
+        setState(() {
+          reservation.etat = EtatReservation.actif;
+        });
+      }
+    });
   }
 
   void _showReservationDetails(BuildContext context, Reservation reservation) {
