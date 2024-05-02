@@ -1,4 +1,4 @@
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, sort_child_properties_last, unused_element
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, sort_child_properties_last, deprecated_member_use
 
 import 'package:flutter/material.dart';
 
@@ -364,45 +364,64 @@ class _ReservationPageState extends State<ReservationPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text(
-            'Mobil Homes disponibles',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            'Mobil-Homes disponibles',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
           content: SingleChildScrollView(
             child: Column(
               children: availableMobileHomes.map((mobileHome) {
-                bool isReserved = reservations.any((reservation) =>
-                    reservation.lieu == mobileHome &&
-                    (reservation.etat == EtatReservation.actif ||
-                        reservation.etat == EtatReservation.confirmer));
-                if (!isReserved) {
-                  return Column(
-                    children: [
-                      Material(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        color: Colors.lightGreen[200],
-                        child: ListTile(
-                          title: Text(
-                            mobileHome,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          onTap: () {
-                            Navigator.pop(context);
-                            _showReservationCalendarBottomSheet(
-                                context, mobileHome);
-                          },
-                        ),
+                return Column(
+                  children: [
+                    Material(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
-                      const Divider(),
-                    ],
-                  );
-                } else {
-                  return Container();
-                }
+                      color: _isMobileHomeAvailable(mobileHome)
+                          ? Colors.lightGreen[200]
+                          : Colors.grey[300],
+                      child: ListTile(
+                        title: Text(
+                          'Numéro du Mobil-home : \n$mobileHome',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize:
+                                Theme.of(context).textTheme.subtitle1!.fontSize,
+                          ),
+                        ),
+                        onTap: _isMobileHomeAvailable(mobileHome)
+                            ? () {
+                                Navigator.pop(context);
+                                _showReservationCalendarBottomSheet(
+                                    context, mobileHome);
+                              }
+                            : null,
+                      ),
+                    ),
+                    const Divider(),
+                  ],
+                );
               }).toList(),
             ),
           ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text(
+                'Annuler',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  Colors.red,
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
@@ -411,61 +430,113 @@ class _ReservationPageState extends State<ReservationPage> {
   void _showReservationCalendarBottomSheet(
       BuildContext context, String mobileHome) {
     DateTime? selectedStartDate;
+    bool hasSelectedDates = false;
 
-    showModalBottomSheet<void>(
+    showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
-            return Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Choisir la période de réservation pour $mobileHome',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Date de début : ${selectedStartDate != null ? _getFullDate(selectedStartDate!) : "Non sélectionnée"}',
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2025),
-                      ).then((pickedDate) {
-                        if (pickedDate != null) {
-                          setState(() {
-                            selectedStartDate = pickedDate;
-                          });
-                        }
-                      });
-                    },
-                    child: const Text('Sélectionner la date de début'),
-                  ),
-                  const SizedBox(height: 16),
-                  if (selectedStartDate != null) ...[
+            return AlertDialog(
+              title: Text(
+                'Choisir la période de réservation pour $mobileHome',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      'Date de fin : ${_getFullDate(selectedStartDate!.add(const Duration(days: 7)))}',
+                      'Date de début : ${selectedStartDate != null ? _getFullDate(selectedStartDate!) : "Non sélectionnée"}',
+                      style: const TextStyle(fontSize: 16),
                     ),
-                    const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                        // La période est sélectionnée, vous pouvez traiter ici
-                        print(
-                            'Période sélectionnée : $selectedStartDate - ${selectedStartDate!.add(const Duration(days: 7))}');
-                        Navigator.pop(context);
+                        showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2025),
+                        ).then((pickedDate) {
+                          if (pickedDate != null) {
+                            setState(() {
+                              selectedStartDate = pickedDate;
+                              hasSelectedDates = true;
+                            });
+                          }
+                        });
                       },
-                      child: const Text('Confirmer la période'),
+                      child: const Text('Sélectionner la date de début'),
                     ),
+                    if (hasSelectedDates) ...[
+                      Text(
+                        'Date de fin : ${_getFullDate(selectedStartDate!.add(const Duration(days: 7)))}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _showConfirmationPopup(
+                              context,
+                              mobileHome,
+                              selectedStartDate!,
+                              selectedStartDate!.add(const Duration(days: 7)));
+                        },
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.orange),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        child: const Text(
+                          'Confirmer la période',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Bouton "annuler"
+                  },
+                  child: const Text(
+                    'Annuler',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.red),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showAvailableMobileHomesPopup(
+                        context); // Bouton "précédent"
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.blue),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    child: const Text('Précédent'),
+                  ),
+                ),
+              ],
             );
           },
         );
@@ -473,14 +544,132 @@ class _ReservationPageState extends State<ReservationPage> {
     );
   }
 
-  bool _isPeriodAvailable(
-      String mobileHome, DateTime startDate, DateTime endDate) {
+  void _showConfirmationPopup(BuildContext context, String mobileHome,
+      DateTime startDate, DateTime endDate) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Détails de la réservation',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    mobileHome,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Période de réservation :',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Du ${_getFullDate(startDate)} au ${_getFullDate(endDate)}',
+              ),
+            ],
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    var newReservation = Reservation(
+                      lieu: mobileHome,
+                      dateDebut: startDate,
+                      dateFin: endDate,
+                      etat: EtatReservation.confirmer,
+                    );
+                    setState(() {
+                      reservations.add(newReservation);
+                    });
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Réservation Confirmée'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: const Text(
+                    'Valider',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                      Colors.orange,
+                    ),
+                    foregroundColor: MaterialStateProperty.all<Color>(
+                      Colors.white,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Bouton "Précédent"
+                    _showReservationCalendarBottomSheet(context, mobileHome);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.blue),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    child: const Text('Précédent'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8), // Espacement entre les lignes de boutons
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context); // Bouton "Annuler"
+                },
+                child: const Text(
+                  'Annuler',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                    Colors.red,
+                  ),
+                  foregroundColor: MaterialStateProperty.all<Color>(
+                    Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  bool _isMobileHomeAvailable(String mobileHome) {
     return !reservations.any((reservation) =>
         reservation.lieu == mobileHome &&
-        ((startDate.isBefore(reservation.dateFin) &&
-                startDate.isAfter(reservation.dateDebut)) ||
-            (endDate.isBefore(reservation.dateFin) &&
-                endDate.isAfter(reservation.dateDebut))));
+        (reservation.etat == EtatReservation.actif ||
+            reservation.etat == EtatReservation.confirmer));
   }
 
   String _getFullDate(DateTime date) {
