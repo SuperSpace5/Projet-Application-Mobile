@@ -52,39 +52,9 @@ class _ReservationPageState extends State<ReservationPage> {
   @override
   void initState() {
     super.initState();
-    reservations = [
-      Reservation(
-        lieu: "Mobile-Home - n°1",
-        dateDebut: DateTime(2024, 04, 20),
-        dateFin: DateTime(2024, 04, 25),
-        etat: EtatReservation.terminer,
-      ),
-      Reservation(
-        lieu: "Mobile-Home - n°2",
-        dateDebut: DateTime(2024, 06, 22),
-        dateFin: DateTime(2024, 06, 27),
-        etat: EtatReservation.actif,
-      ),
-      Reservation(
-        lieu: "Mobile-Home - n°3",
-        dateDebut: DateTime(2024, 07, 08),
-        dateFin: DateTime(2024, 07, 15),
-        etat: EtatReservation.confirmer,
-      ),
-      Reservation(
-        lieu: "Mobile-Home - n°4",
-        dateDebut: DateTime(2024, 08, 05),
-        dateFin: DateTime(2024, 08, 10),
-        etat: EtatReservation.annuler,
-      ),
-      Reservation(
-        lieu: "Mobile-Home - n°5",
-        dateDebut: DateTime(2024, 08, 21),
-        dateFin: DateTime(2024, 08, 28),
-        etat: EtatReservation.confirmer,
-      ),
-    ];
-
+    // Initialisation de la liste des réservations
+    reservations = [];
+    // Génération de la liste des mobil-homes disponibles
     availableMobileHomes =
         List.generate(10, (index) => "Mobile-Home - n°${index + 1}");
   }
@@ -258,7 +228,7 @@ class _ReservationPageState extends State<ReservationPage> {
                   ),
                 ),
                 Text(
-                  'Réservation faite le : ${_getFullDate(DateTime(2024, 01, 17))}',
+                  'Réservation faite le : ${_getFullDate(DateTime.now())}',
                 ),
               ],
             ),
