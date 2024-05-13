@@ -1,5 +1,8 @@
 # Projet - Application Mobile
 
+## Version V1.3.3
+- Corrections mineures.
+
 ## Version V1.3.2
 - Ajout de la fonctionnalité qui change l'état de la réservation "Confirmée" à "Active" si on est le jour de début de la réservation.
 
