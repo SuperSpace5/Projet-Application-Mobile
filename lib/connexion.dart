@@ -249,8 +249,11 @@ class _ConnexionPageState extends State<ConnexionPage> {
 
   // Fonction pour hacher le mot de passe
   String _hashPassword(String password) {
+    // Encode le mot de passe en une liste d'octets utilisant l'encodage UTF-8
     List<int> bytes = utf8.encode(password);
+    // Calcule le hash SHA-256 des octets encodés
     Digest digest = sha256.convert(bytes);
+    // Retourne le hash sous forme de chaîne de caractères
     return digest.toString();
   }
 

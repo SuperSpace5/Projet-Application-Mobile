@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'pageprotest.dart';
+import 'package:crypto/crypto.dart';
 
 void main() {
   runApp(MyApp());
@@ -37,7 +38,11 @@ class _LoginPageState extends State<LoginPage> {
     String password = _passwordController.text.trim();
 
     try {
-      await login(email, password);
+      // Hashage du mot de passe
+      String hashedPassword = _hashPassword(password);
+
+      await login(email, hashedPassword); // Envoi des identifiants hachés
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Login successful')),
       );
@@ -50,6 +55,13 @@ class _LoginPageState extends State<LoginPage> {
         const SnackBar(content: Text('Login failed')),
       );
     }
+  }
+
+  // Fonction pour hacher le mot de passe
+  String _hashPassword(String password) {
+    List<int> bytes = utf8.encode(password);
+    Digest digest = sha256.convert(bytes);
+    return digest.toString();
   }
 
   @override
@@ -91,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
 
 Future<void> login(String email, String password) async {
   final response = await http.post(
-    Uri.parse('http://192.168.95.84:8080/account/mobile/login_form_mobile'),
+    Uri.parse('http://192.168.3.84:8080/account/mobile/login_form_mobile'),
     headers: <String, String>{
       'Content-Type': 'application/x-www-form-urlencoded',
     },
