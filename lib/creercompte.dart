@@ -232,7 +232,7 @@ class _CreerComptePageState extends State<CreerComptePage> {
     String hashedPassword = _hashPassword(password);
 
     // URL de l'API pour la création de compte
-    String apiUrl = 'http://192.168.95.84:8080/account/creationCompte_form';
+    String apiUrl = 'http://192.168.135.84:8080/account/creationCompte_form';
 
     // Envoi du formulaire et réception du résultat
     String resultCode = await _sendLoginForm(
@@ -250,37 +250,31 @@ class _CreerComptePageState extends State<CreerComptePage> {
 
     // Affichage des messages d'erreur en fonction du code de résultat
     // (Les codes de résultat sont propres à votre application)
-    if (resultCode == '0100') {
+    if (resultCode == '0118') {
       _showSuccessDialog(context,
           "Le compte a été créé avec succès, veuillez cliquer sur le lien dans l'email que vous venez de recevoir");
     } else if (resultCode == '0000') {
       _showErrorDialog(context, "Erreur interne inconnue");
-    } else if (resultCode == '0006') {
-      _showErrorDialog(context, "Le format de l'email est incorrect");
-    } else if (resultCode == '0007') {
-      _showErrorDialog(context,
-          "Le format du prénom est incorrect (vérifiez la majuscule au début et uniquement des minuscules ensuite)");
-    } else if (resultCode == '0008') {
-      _showErrorDialog(context,
-          "Le format du nom est incorrect (vérifiez la majuscule au début et uniquement des minuscules ensuite)");
-    } else if (resultCode == '0009') {
-      _showErrorDialog(context,
-          "Le format du numéro est incorrect (vérifiez le format du numéro)");
-    } else if (resultCode == '0010') {
+    } else if (resultCode == '0001') {
       _showErrorDialog(context, "Le chiffrement du mot de passe est absent");
-    } else if (resultCode == '0011') {
-      _showErrorDialog(context,
-          "Le format du genre est incorrect (vérifiez le format du genre M ou F)");
-    } else if (resultCode == '0012') {
-      _showErrorDialog(context, "L'email est déjà associé à un compte");
-    } else if (resultCode == '0013') {
-      _showErrorDialog(context, "Le compte est déjà actif");
-    } else if (resultCode == '0014') {
-      _showErrorDialog(context,
-          "Le compte est bloqué suite à trop de tentatives de validation");
-    } else if (resultCode == '0015') {
-      _showErrorDialog(
-          context, "Le code de vérification du compte est incorrect");
+    } else if (resultCode == '0002') {
+      _showErrorDialog(context, "Format incorrect");
+    } else if (resultCode == '0111') {
+      _showErrorDialog(context, "Format de l'email incorrect");
+    } else if (resultCode == '0112') {
+      _showErrorDialog(context, "Format du nom invalide (vérifiez la majuscule au début et uniquement des minuscules ensuite)");
+    } else if (resultCode == '0113') {
+      _showErrorDialog(context, "Format du prénom est incorrect (vérifiez la majuscule au début et uniquement des minuscules ensuite)");
+    } else if (resultCode == '0114') {
+      _showErrorDialog(context, "Format du genre est incorrect (vérifiez le format du genre M ou F)");
+    } else if (resultCode == '0115') {
+      _showErrorDialog(context, "Format du numéro est incorrect (vérifiez le format du numéro)");
+    } else if (resultCode == '0116') {
+      _showErrorDialog(context, "Compte déjà existant");
+    } else if (resultCode == '0119') {
+      _showErrorDialog(context, "Compte déjà actif");
+    } else if (resultCode == '0120') {
+      _showErrorDialog(context, "Compte bloqué");
     }
   }
 

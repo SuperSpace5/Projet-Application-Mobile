@@ -38,9 +38,9 @@ class _PingTestPageState extends State<PingTestPage> {
     try {
       // Effectuer une requête HTTP GET vers l'URL spécifiée
       final response =
-          await http.get(Uri.parse('http://192.168.137.3:8080/test/ping'));
-      // Vérifier si la réponse est OK (code 200)
-      if (response.statusCode == 200) {
+          await http.get(Uri.parse('http://192.168.135.84:8080/mobile/ping'));
+      // Vérifier si la réponse est OK (code 0300)
+      if (response.statusCode == 0300) {
         // Mettre à jour le résultat du ping en cas de succès
         setState(() {
           _pingResult = 'Ping réussi';

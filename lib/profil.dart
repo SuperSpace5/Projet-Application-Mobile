@@ -69,7 +69,7 @@ class ProfilPage extends StatelessWidget {
     }
 
     final response = await http
-        .get(Uri.parse('http://192.168.95.84:8080/account/mobile/info'));
+        .get(Uri.parse('http://192.168.135.84:8080/account/mobile/info'));
 
     if (response.statusCode == 200) {
       return ProfileInfo.fromJson(json.decode(response.body));

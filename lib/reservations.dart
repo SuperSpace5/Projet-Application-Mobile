@@ -368,10 +368,8 @@ class _ReservationPageState extends State<ReservationPage> {
                       child: ListTile(
                         title: Text(
                           'Numéro du Mobil-home : \n$mobileHome',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize:
-                                Theme.of(context).textTheme.subtitle1!.fontSize,
                           ),
                         ),
                         onTap: _isMobileHomeAvailable(mobileHome)

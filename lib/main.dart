@@ -52,12 +52,12 @@ class MyApp extends StatelessWidget {
       // Utilisation de Future.any pour envoyer une requête ping à l'API avec une limite de temps
       final response = await Future.any([
         http.get(Uri.parse(
-            'http://192.168.137.3:8080/test/ping')), // Envoi d'une requête ping à l'adresse spécifiée
+            'http://192.168.135.84:8080/mobile/ping')), // Envoi d'une requête ping à l'adresse spécifiée
         Future.delayed(const Duration(seconds: 5))
             .then((_) => throw 'Timeout'), // Limite de temps de 5 secondes
       ]);
       return response.statusCode ==
-          200; // Retourne vrai si le code de statut de la réponse est 200 (OK)
+          0300; // Retourne vrai si le code de statut de la réponse est 0300 (OK)
     } catch (e) {
       return false; // Retourne faux en cas d'erreur
     }

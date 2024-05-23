@@ -5,12 +5,14 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'creercompte.dart'; // Importe le fichier creercompte.dart ici
 import 'mdpoublie.dart'; // Importe le fichier mdpoublie.dart ici
 import 'profil.dart'; // Importe le fichier profil.dart ici
 import 'package:shared_preferences/shared_preferences.dart'; // Importez la bibliothèque shared_preferences
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:cookie_jar/cookie_jar.dart';
 
 // Déclaration et initialisation de la variable cookie
 String cookie =
@@ -205,16 +207,18 @@ class _ConnexionPageState extends State<ConnexionPage> {
     String hashedPassword = _hashPassword(password);
 
     // URL de l'API pour la connexion
-    String apiUrl =
-        'http://192.168.95.84:8080/account/mobile/login_form_mobile';
+    String apiUrl = 'http://192.168.135.84:8080/account/mobile/login_mobile';
 
     // Envoi du formulaire de connexion
     String resultCode = await _sendLoginForm(email, hashedPassword, apiUrl);
 
     // Traitement des résultats de la connexion
-    if (resultCode == '0102') {
+    if (resultCode == '1000') {
       // Création et enregistrement du cookie de session
       _saveSessionCookie();
+
+      // Récupérer les informations du compte
+      await _fetchAccountInfo();
 
       // Rediriger vers la page de profil si la réponse est valide
       Navigator.pushReplacement(
@@ -224,19 +228,17 @@ class _ConnexionPageState extends State<ConnexionPage> {
     } else if (resultCode == '0000') {
       _showErrorDialog(context, "Erreur interne inconnue");
     } else if (resultCode == '0001') {
-      _showErrorDialog(context, "L'email n'existe pas");
-    } else if (resultCode == '0002') {
-      _showErrorDialog(context, "Le compte n'est pas vérifié");
-    } else if (resultCode == '0003') {
-      _showErrorDialog(
-          context, "Le compte est bloqué, veuillez envoyer un email");
-    } else if (resultCode == '0004') {
-      _showErrorDialog(context, "Mot de passe incorrect");
-    } else if (resultCode == '0005') {
-      _showErrorDialog(context,
-          "Le compte est bloqué suite à trop de tentatives de connexion");
-    } else if (resultCode == '0010') {
       _showErrorDialog(context, "Le chiffrement du mot de passe est absent");
+    } else if (resultCode == '0002') {
+      _showErrorDialog(context, "Format incorrect");
+    } else if (resultCode == '0100') {
+      _showErrorDialog(context, "Identification invalide");
+    } else if (resultCode == '0101') {
+      _showErrorDialog(context, "Compte inactif");
+    } else if (resultCode == '0121') {
+      _showErrorDialog(context, "Code expiré");
+    } else if (resultCode == '0117') {
+      _showErrorDialog(context, "Compte inexistant");
     }
   }
 
@@ -249,31 +251,47 @@ class _ConnexionPageState extends State<ConnexionPage> {
 
   // Fonction pour hacher le mot de passe
   String _hashPassword(String password) {
+    // Encode le mot de passe en une liste d'octets utilisant l'encodage UTF-8
     List<int> bytes = utf8.encode(password);
+    // Calcule le hash SHA-256 des octets encodés
     Digest digest = sha256.convert(bytes);
+    // Retourne le hash sous forme de chaîne de caractères
     return digest.toString();
   }
 
   // Fonction pour envoyer le formulaire de connexion
   Future<String> _sendLoginForm(
       String email, String hashedPassword, String apiUrl) async {
+    Dio dio = Dio();
+    dio.interceptors.add(CookieManager(CookieJar()));
+
     try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        body: {
+      final response = await dio.post(
+        apiUrl,
+        data: {
           'email': email,
           'password': hashedPassword,
         },
       );
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        return data["info"];
+        if (response.data.runtimeType == String) {
+          // Si la réponse est de type String, vous pouvez la traiter directement
+          print(response.data);
+          return response.data;
+        } else if (response.data.runtimeType == Map<String, dynamic>) {
+          // Si la réponse est de type Map<String, dynamic>, vous pouvez accéder à ses propriétés
+          Map<String, dynamic> data = response.data;
+          print(data);
+          return data["info"];
+        } else {
+          return '';
+        }
       } else {
         throw Exception(
-            'Échec du chargement des données. Code d\'état : ${response.statusCode}');
+            "Échec du chargement des données. Code d'état : ${response.statusCode}");
       }
     } catch (e) {
-      print('Erreur lors de l\'envoi du formulaire de connexion : $e');
+      print("Erreur lors de l'envoi du formulaire de connexion : $e");
       return '';
     }
   }
@@ -306,5 +324,27 @@ class _ConnexionPageState extends State<ConnexionPage> {
         );
       },
     );
+  }
+
+  // Fonction pour récupérer les informations du compte
+  Future<void> _fetchAccountInfo() async {
+    String apiUrl = 'http://192.168.135.84:8080/account/mobile';
+
+    Dio dio = Dio();
+    dio.interceptors.add(CookieManager(CookieJar()));
+
+    try {
+      final response = await dio.get(apiUrl);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = response.data;
+        print(data);
+        // Enregistrer les informations du compte dans les préférences partagées
+      } else {
+        throw Exception(
+            "Échec du chargement des données. Code d'état : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Erreur lors de la récupération des informations du compte : $e");
+    }
   }
 }
