@@ -2,29 +2,14 @@
 // ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
+import 'package:http/http.dart' as http;
 import 'creercompte.dart'; // Importe le fichier creercompte.dart ici
 import 'mdpoublie.dart'; // Importe le fichier mdpoublie.dart ici
 import 'profil.dart'; // Importe le fichier profil.dart ici
-import 'package:shared_preferences/shared_preferences.dart'; // Importez la bibliothèque shared_preferences
-import 'package:dio/dio.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import 'package:cookie_jar/cookie_jar.dart';
-
-// Déclaration et initialisation de la variable cookie
-String cookie =
-    ""; // Vous pouvez initialiser cookie avec une valeur par défaut si nécessaire
-
-// Fonction pour générer un identifiant de session
-String generateSessionId({int length = 32}) {
-  const charset = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  final random = Random.secure();
-  return List.generate(length, (_) => charset[random.nextInt(charset.length)])
-      .join();
-}
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Fonction principale du programme Flutter
 void main() {
@@ -207,19 +192,13 @@ class _ConnexionPageState extends State<ConnexionPage> {
     String hashedPassword = _hashPassword(password);
 
     // URL de l'API pour la connexion
-    String apiUrl = 'http://192.168.135.84:8080/account/mobile/login_mobile';
+    String apiUrl = 'http://192.168.135.84:8080/account/mobile/login';
 
     // Envoi du formulaire de connexion
     String resultCode = await _sendLoginForm(email, hashedPassword, apiUrl);
 
     // Traitement des résultats de la connexion
     if (resultCode == '1000') {
-      // Création et enregistrement du cookie de session
-      _saveSessionCookie();
-
-      // Récupérer les informations du compte
-      await _fetchAccountInfo();
-
       // Rediriger vers la page de profil si la réponse est valide
       Navigator.pushReplacement(
         context,
@@ -242,13 +221,6 @@ class _ConnexionPageState extends State<ConnexionPage> {
     }
   }
 
-  // Fonction pour enregistrer le cookie de session
-  void _saveSessionCookie() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    cookie = generateSessionId(); // Générer un nouvel identifiant de session
-    await prefs.setString('session_cookie', cookie);
-  }
-
   // Fonction pour hacher le mot de passe
   String _hashPassword(String password) {
     // Encode le mot de passe en une liste d'octets utilisant l'encodage UTF-8
@@ -262,30 +234,20 @@ class _ConnexionPageState extends State<ConnexionPage> {
   // Fonction pour envoyer le formulaire de connexion
   Future<String> _sendLoginForm(
       String email, String hashedPassword, String apiUrl) async {
-    Dio dio = Dio();
-    dio.interceptors.add(CookieManager(CookieJar()));
-
     try {
-      final response = await dio.post(
-        apiUrl,
-        data: {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: {
           'email': email,
           'password': hashedPassword,
         },
       );
       if (response.statusCode == 200) {
-        if (response.data.runtimeType == String) {
-          // Si la réponse est de type String, vous pouvez la traiter directement
-          print(response.data);
-          return response.data;
-        } else if (response.data.runtimeType == Map<String, dynamic>) {
-          // Si la réponse est de type Map<String, dynamic>, vous pouvez accéder à ses propriétés
-          Map<String, dynamic> data = response.data;
-          print(data);
-          return data["info"];
-        } else {
-          return '';
-        }
+        final responseBody = jsonDecode(response.body);
+        // Stocke les informations du compte dans les préférences partagées
+        await _saveAccountInfo(responseBody);
+        print(responseBody);
+        return responseBody["info"];
       } else {
         throw Exception(
             "Échec du chargement des données. Code d'état : ${response.statusCode}");
@@ -294,6 +256,13 @@ class _ConnexionPageState extends State<ConnexionPage> {
       print("Erreur lors de l'envoi du formulaire de connexion : $e");
       return '';
     }
+  }
+
+  Future<void> _saveAccountInfo(Map<String, dynamic> accountInfo) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('nom', accountInfo['nom']);
+    await prefs.setString('prenom', accountInfo['prenom']);
+    await prefs.setString('genre', accountInfo['genre']);
   }
 
   // Fonction pour vérifier si l'email est valide
@@ -324,27 +293,5 @@ class _ConnexionPageState extends State<ConnexionPage> {
         );
       },
     );
-  }
-
-  // Fonction pour récupérer les informations du compte
-  Future<void> _fetchAccountInfo() async {
-    String apiUrl = 'http://192.168.135.84:8080/account/mobile';
-
-    Dio dio = Dio();
-    dio.interceptors.add(CookieManager(CookieJar()));
-
-    try {
-      final response = await dio.get(apiUrl);
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = response.data;
-        print(data);
-        // Enregistrer les informations du compte dans les préférences partagées
-      } else {
-        throw Exception(
-            "Échec du chargement des données. Code d'état : ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Erreur lors de la récupération des informations du compte : $e");
-    }
   }
 }

@@ -1,44 +1,56 @@
 // ignore_for_file: use_key_in_widget_constructors
 
-// Ignorer certaines règles de lint
-// Importer les bibliothèques nécessaires
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:io';
-import 'accueil.dart'; // Importer le fichier accueil.dart
+import 'package:shared_preferences/shared_preferences.dart';
+import 'accueil.dart';
+import 'connexion.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-// Classe principale de l'application Flutter
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Ping Test', // Titre de l'application
+      title: 'Ping Test',
       theme: ThemeData(
-        primarySwatch: Colors.blue, // Thème de l'application
+        primarySwatch: Colors.blue,
       ),
-      // Utilisation de FutureBuilder pour gérer l'état asynchrone
       home: FutureBuilder(
-        future:
-            _checkApiStatus(), // Utilisation de la fonction _checkApiStatus pour vérifier l'état de l'API
+        future: _checkApiStatus(),
         builder: (BuildContext context, AsyncSnapshot<bool?> snapshot) {
-          // Vérification de l'état de connexion
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(); // Affichage de l'indicateur de chargement en attendant la réponse de l'API
+            return const CircularProgressIndicator();
           } else {
-            final apiStatus = snapshot
-                .data; // Récupération de l'état de l'API à partir du snapshot
+            final apiStatus = snapshot.data;
             if (apiStatus == null || !apiStatus) {
-              // Si l'API ne fonctionne pas correctement
-              // Afficher une boîte de dialogue d'erreur et fermer l'application
               return ErrorPopup();
             } else {
-              // Si l'API fonctionne correctement
-              // Afficher une boîte de dialogue de succès et rediriger vers la page d'accueil
-              return SuccessPopup();
+              return FutureBuilder(
+                future: _checkAccountData(),
+                builder: (BuildContext context, AsyncSnapshot<bool?> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else {
+                    final hasAccountData = snapshot.data;
+                    if (hasAccountData == null || !hasAccountData) {
+                      return SuccessPopup();
+                    } else {
+                      return FutureBuilder(
+                        future: _showAccountDataPopup(context),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<void> snapshot) {
+                          return Container(); // Placeholder widget, actual UI is built in _showAccountDataPopup
+                        },
+                      );
+                    }
+                  }
+                },
+              );
             }
           }
         },
@@ -46,66 +58,100 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  // Fonction asynchrone pour vérifier l'état de l'API
   Future<bool?> _checkApiStatus() async {
     try {
-      // Utilisation de Future.any pour envoyer une requête ping à l'API avec une limite de temps
       final response = await Future.any([
-        http.get(Uri.parse(
-            'http://192.168.135.84:8080/mobile/ping')), // Envoi d'une requête ping à l'adresse spécifiée
-        Future.delayed(const Duration(seconds: 5))
-            .then((_) => throw 'Timeout'), // Limite de temps de 5 secondes
+        http.get(Uri.parse('http://192.168.135.84:8080/mobile/ping')),
+        Future.delayed(const Duration(seconds: 5)).then((_) => throw 'Timeout'),
       ]);
-      return response.statusCode ==
-          0300; // Retourne vrai si le code de statut de la réponse est 0300 (OK)
+      return response.statusCode == 200;
     } catch (e) {
-      return false; // Retourne faux en cas d'erreur
+      return false;
     }
+  }
+
+  Future<bool?> _checkAccountData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? genre = prefs.getString('genre');
+    String? nom = prefs.getString('nom');
+    String? prenom = prefs.getString('prenom');
+    return genre != null && nom != null && prenom != null;
+  }
+
+  Future<void> _showAccountDataPopup(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? genre = prefs.getString('genre');
+
+    if (genre == "M") {
+      genre = "Monsieur";
+    } else if (genre == "F") {
+      genre = "Madame";
+    }
+
+    String? nom = prefs.getString('nom');
+    String? prenom = prefs.getString('prenom');
+    String welcomeMessage =
+        'Bonjour $genre $nom $prenom. Veuillez-vous reconnecter.';
+
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Re-Bienvenue'),
+          content: Text(welcomeMessage),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => ConnexionPage()),
+                );
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
-// Widget pour afficher une boîte de dialogue de succès
 class SuccessPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(
-          'API en marche'), // Titre de la boîte de dialogue de succès
-      content:
-          const Text('L\'API fonctionne correctement.'), // Message de succès
+      title: const Text('API en marche'),
+      content: const Text('L\'API fonctionne correctement.'),
       actions: <Widget>[
         TextButton(
           onPressed: () {
-            Navigator.of(context).popUntil((route) => route
-                .isFirst); // Fermer toutes les routes jusqu'à la première page
+            Navigator.of(context).popUntil((route) => route.isFirst);
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      AccueilPage()), // Rediriger vers la page d'accueil
+              MaterialPageRoute(builder: (context) => AccueilPage()),
             );
           },
-          child: const Text('OK'), // Bouton OK pour fermer la boîte de dialogue
+          child: const Text('OK'),
         ),
       ],
     );
   }
 }
 
-// Widget pour afficher une boîte de dialogue d'erreur
 class ErrorPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Erreur API'), // Titre de la boîte de dialogue d'erreur
-      content: const Text('L\'API ne fonctionne pas.'), // Message d'erreur
+      title: const Text('Erreur API'),
+      content: const Text('L\'API ne fonctionne pas.'),
       actions: <Widget>[
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop(); // Ferme la boîte de dialogue
-            exit(0); // Quitte l'application
+            Navigator.of(context).pop();
+            exit(0);
           },
-          child: const Text('OK'), // Bouton OK pour fermer la boîte de dialogue
+          child: const Text('OK'),
         ),
       ],
     );
