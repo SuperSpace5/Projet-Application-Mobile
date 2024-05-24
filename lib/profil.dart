@@ -4,6 +4,8 @@ import 'package:mobile_home_and_paradise/reservations.dart';
 import 'contact2.dart';
 import 'code.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(MyApp());
@@ -31,6 +33,7 @@ class _ProfilPageState extends State<ProfilPage> {
   String? _nom;
   String? _prenom;
   String? _genre;
+  String? _token;
 
   @override
   void initState() {
@@ -44,6 +47,7 @@ class _ProfilPageState extends State<ProfilPage> {
       _nom = prefs.getString('nom');
       _prenom = prefs.getString('prenom');
       _genre = prefs.getString('genre');
+      _token = prefs.getString('token');
 
       if (_genre == "M") {
         _genre = "Monsieur";
@@ -59,6 +63,77 @@ class _ProfilPageState extends State<ProfilPage> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => AccueilPage()),
+    );
+  }
+
+  Future<void> _sendToken() async {
+    if (_token == null) {
+      _showErrorDialog("Token non disponible");
+      return;
+    }
+
+    String apiUrl = 'http://192.168.135.84:8080/account/mobile/refresh';
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'Token': _token,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body);
+        _showSuccessDialog("Token envoyé avec succès: ${responseBody['info']}");
+      } else {
+        final responseBody = jsonDecode(response.body);
+        _showErrorDialog("Échec de l'envoi du token : ${responseBody['info']}");
+      }
+    } catch (e) {
+      _showErrorDialog("Erreur lors de l'envoi du token : $e");
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Erreur"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Succès"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -88,6 +163,11 @@ class _ProfilPageState extends State<ProfilPage> {
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
             ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _sendToken,
+              child: const Text('Envoyer Token'),
+            ),
           ],
         ),
       ),
@@ -106,7 +186,7 @@ class _ProfilPageState extends State<ProfilPage> {
               child: Image.asset('assets/images/navigation/reservation.png',
                   width: 30),
             ),
-            label: 'Réserver',
+            label: 'Réservations',
           ),
           BottomNavigationBarItem(
             icon: GestureDetector(

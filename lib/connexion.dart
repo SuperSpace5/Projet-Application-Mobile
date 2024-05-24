@@ -263,6 +263,7 @@ class _ConnexionPageState extends State<ConnexionPage> {
     await prefs.setString('nom', accountInfo['nom']);
     await prefs.setString('prenom', accountInfo['prenom']);
     await prefs.setString('genre', accountInfo['genre']);
+    await prefs.setString('token', accountInfo['Token']);
   }
 
   // Fonction pour vérifier si l'email est valide
