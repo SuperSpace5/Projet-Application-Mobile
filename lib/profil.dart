@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_home_and_paradise/accueil.dart';
+import 'package:mobile_home_and_paradise/config.dart';
 import 'package:mobile_home_and_paradise/reservations.dart';
 import 'contact2.dart';
 import 'code.dart';
@@ -72,7 +73,7 @@ class _ProfilPageState extends State<ProfilPage> {
       return;
     }
 
-    String apiUrl = 'http://192.168.135.84:8080/account/mobile/refresh';
+    String apiUrl = '$apiUrlo/account/mobile/refresh';
 
     try {
       final response = await http.post(

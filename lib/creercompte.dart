@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart'; // Package pour le hachage des mots de passe
 import 'connexion.dart';
+import 'config.dart';
 
 // Fonction principale pour exécuter l'application Flutter
 void main() {
@@ -232,7 +233,7 @@ class _CreerComptePageState extends State<CreerComptePage> {
     String hashedPassword = _hashPassword(password);
 
     // URL de l'API pour la création de compte
-    String apiUrl = 'http://192.168.135.84:8080/account/creationCompte_form';
+    String apiUrl = '$apiUrlo/account/creationCompte_form';
 
     // Envoi du formulaire et réception du résultat
     String resultCode = await _sendLoginForm(
@@ -262,13 +263,17 @@ class _CreerComptePageState extends State<CreerComptePage> {
     } else if (resultCode == '0111') {
       _showErrorDialog(context, "Format de l'email incorrect");
     } else if (resultCode == '0112') {
-      _showErrorDialog(context, "Format du nom invalide (vérifiez la majuscule au début et uniquement des minuscules ensuite)");
+      _showErrorDialog(context,
+          "Format du nom invalide (vérifiez la majuscule au début et uniquement des minuscules ensuite)");
     } else if (resultCode == '0113') {
-      _showErrorDialog(context, "Format du prénom est incorrect (vérifiez la majuscule au début et uniquement des minuscules ensuite)");
+      _showErrorDialog(context,
+          "Format du prénom est incorrect (vérifiez la majuscule au début et uniquement des minuscules ensuite)");
     } else if (resultCode == '0114') {
-      _showErrorDialog(context, "Format du genre est incorrect (vérifiez le format du genre M ou F)");
+      _showErrorDialog(context,
+          "Format du genre est incorrect (vérifiez le format du genre M ou F)");
     } else if (resultCode == '0115') {
-      _showErrorDialog(context, "Format du numéro est incorrect (vérifiez le format du numéro)");
+      _showErrorDialog(context,
+          "Format du numéro est incorrect (vérifiez le format du numéro)");
     } else if (resultCode == '0116') {
       _showErrorDialog(context, "Compte déjà existant");
     } else if (resultCode == '0119') {

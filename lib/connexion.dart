@@ -1,3 +1,5 @@
+// connexion.dart
+
 // Importations nécessaires pour utiliser Flutter
 // ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, use_build_context_synchronously
 
@@ -10,6 +12,7 @@ import 'creercompte.dart'; // Importe le fichier creercompte.dart ici
 import 'mdpoublie.dart'; // Importe le fichier mdpoublie.dart ici
 import 'profil.dart'; // Importe le fichier profil.dart ici
 import 'package:shared_preferences/shared_preferences.dart';
+import 'config.dart'; // Importe le fichier config.dart ici
 
 // Fonction principale du programme Flutter
 void main() {
@@ -191,8 +194,8 @@ class _ConnexionPageState extends State<ConnexionPage> {
     // Hachage du mot de passe
     String hashedPassword = _hashPassword(password);
 
-    // URL de l'API pour la connexion
-    String apiUrl = 'http://192.168.135.84:8080/account/mobile/login';
+    // Utiliser la variable apiUrl de config.dart
+    String apiUrl = '$apiUrlo/account/mobile/login';
 
     // Envoi du formulaire de connexion
     String resultCode = await _sendLoginForm(email, hashedPassword, apiUrl);
@@ -264,6 +267,12 @@ class _ConnexionPageState extends State<ConnexionPage> {
     await prefs.setString('prenom', accountInfo['prenom']);
     await prefs.setString('genre', accountInfo['genre']);
     await prefs.setString('token', accountInfo['Token']);
+
+    String accountStatus = accountInfo['compteActif'];
+    if (accountStatus == '0') {
+      // Afficher un message d'erreur si le compte est inactif
+      _showErrorDialog(context, "Compte inactif");
+    }
   }
 
   // Fonction pour vérifier si l'email est valide

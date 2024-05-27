@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'accueil.dart';
 import 'connexion.dart';
+import 'config.dart';
 
 void main() {
   runApp(MyApp());
@@ -61,7 +62,7 @@ class MyApp extends StatelessWidget {
   Future<bool?> _checkApiStatus() async {
     try {
       final response = await Future.any([
-        http.get(Uri.parse('http://192.168.135.84:8080/mobile/ping')),
+        http.get(Uri.parse('$apiUrlo/mobile/ping')),
         Future.delayed(const Duration(seconds: 5)).then((_) => throw 'Timeout'),
       ]);
       return response.statusCode == 200;
