@@ -334,15 +334,30 @@ class _CreerComptePageState extends State<CreerComptePage> {
           Navigator.of(context).pop(true);
         });
         return AlertDialog(
-          title: const Text("Erreur"), // Titre de la boîte de dialogue
-          content: Text(message), // Contenu de la boîte de dialogue
+          backgroundColor: Colors.red, // Fond rouge pour les erreurs
+          title: const Text(
+            "Erreur", // Titre de la boîte de dialogue
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold), // Texte blanc en gras
+          ),
+          content: Text(
+            message, // Contenu de la boîte de dialogue
+            style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold), // Texte blanc en gras
+          ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Fermer la boîte de dialogue
               },
               child: const Text(
-                  "OK"), // Texte du bouton pour fermer la boîte de dialogue
+                "OK", // Texte du bouton
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold), // Texte blanc en gras
+              ),
             ),
           ],
         );
@@ -362,8 +377,19 @@ class _CreerComptePageState extends State<CreerComptePage> {
               MaterialPageRoute(builder: (context) => ConnexionPage()));
         });
         return AlertDialog(
-          title: const Text("Succès"), // Titre de la boîte de dialogue
-          content: Text(message), // Contenu de la boîte de dialogue
+          backgroundColor: Colors.green, // Fond vert pour les succès
+          title: const Text(
+            "Succès", // Titre de la boîte de dialogue
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold), // Texte blanc en gras
+          ),
+          content: Text(
+            message, // Contenu de la boîte de dialogue
+            style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold), // Texte blanc en gras
+          ),
           actions: [
             TextButton(
               onPressed: () {
@@ -373,7 +399,11 @@ class _CreerComptePageState extends State<CreerComptePage> {
                     MaterialPageRoute(builder: (context) => ConnexionPage()));
               },
               child: const Text(
-                  "OK"), // Texte du bouton pour fermer la boîte de dialogue
+                "OK", // Texte du bouton
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold), // Texte blanc en gras
+              ),
             ),
           ],
         );

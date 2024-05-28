@@ -1,5 +1,3 @@
-// ignore_for_file: use_key_in_widget_constructors
-
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -14,6 +12,15 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  Future<dynamic> _delayedApiCheck() async {
+    try {
+      await Future.delayed(const Duration(seconds: 3)); // Délai de 3 secondes
+      return _checkApiStatus();
+    } catch (error) {
+      return error; // Retourne l'erreur si la vérification échoue
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,36 +29,42 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: FutureBuilder(
-        future: _checkApiStatus(),
-        builder: (BuildContext context, AsyncSnapshot<bool?> snapshot) {
+        future: _delayedApiCheck(), // Utilisation de la fonction de délai
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const LoadingScreen(error: null);
           } else {
-            final apiStatus = snapshot.data;
-            if (apiStatus == null || !apiStatus) {
-              return ErrorPopup();
+            if (snapshot.hasError) {
+              // Afficher la popup d'erreur directement sur la page de chargement
+              return LoadingScreen(error: snapshot.error.toString());
             } else {
-              return FutureBuilder(
-                future: _checkAccountData(),
-                builder: (BuildContext context, AsyncSnapshot<bool?> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  } else {
-                    final hasAccountData = snapshot.data;
-                    if (hasAccountData == null || !hasAccountData) {
-                      return SuccessPopup();
+              final apiStatus = snapshot.data as bool?;
+              if (apiStatus == null || !apiStatus) {
+                return const ErrorPopup();
+              } else {
+                return FutureBuilder(
+                  future: _checkAccountData(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<bool?> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const LoadingScreen(error: null);
                     } else {
-                      return FutureBuilder(
-                        future: _showAccountDataPopup(context),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<void> snapshot) {
-                          return Container(); // Placeholder widget, actual UI is built in _showAccountDataPopup
-                        },
-                      );
+                      final hasAccountData = snapshot.data;
+                      if (hasAccountData == null || !hasAccountData) {
+                        return SuccessPopup();
+                      } else {
+                        return FutureBuilder(
+                          future: _showAccountDataPopup(context),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<void> snapshot) {
+                            return Container(); // Placeholder widget, actual UI is built in _showAccountDataPopup
+                          },
+                        );
+                      }
                     }
-                  }
-                },
-              );
+                  },
+                );
+              }
             }
           }
         },
@@ -67,7 +80,7 @@ class MyApp extends StatelessWidget {
       ]);
       return response.statusCode == 200;
     } catch (e) {
-      return false;
+      throw 'Erreur API'; // Lance une erreur si la vérification échoue
     }
   }
 
@@ -118,6 +131,40 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class LoadingScreen extends StatelessWidget {
+  final String? error;
+
+  const LoadingScreen({Key? key, this.error}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            // Assure-toi d'ajouter le logo de ton application ici
+            Image.asset(
+              'assets/images/logo.png', // Remplace par le chemin correct de ton logo
+              height: 150,
+            ),
+            const SizedBox(height: 20),
+            if (error != null)
+              ErrorPopup(
+                  error:
+                      error), // Utiliser ErrorPopup pour afficher la pop-up d'erreur
+            if (error == null)
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class SuccessPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -141,18 +188,41 @@ class SuccessPopup extends StatelessWidget {
 }
 
 class ErrorPopup extends StatelessWidget {
+  final String? error;
+
+  const ErrorPopup({Key? key, this.error}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Erreur API'),
-      content: const Text('L\'API ne fonctionne pas.'),
+      backgroundColor: Colors.red, // Fond rouge
+      title: const Text(
+        'Erreur API',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ), // Police blanche et en gras
+      ),
+      content: const Text(
+        'L\'API ne fonctionne pas.', // Utiliser le texte spécifié
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ), // Police blanche et en gras
+      ),
       actions: <Widget>[
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
             exit(0);
           },
-          child: const Text('OK'),
+          child: const Text(
+            'OK',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ), // Bouton OK blanc et en gras
+          ),
         ),
       ],
     );

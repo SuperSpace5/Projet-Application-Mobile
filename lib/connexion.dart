@@ -286,18 +286,35 @@ class _ConnexionPageState extends State<ConnexionPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        // Fermer la boîte de dialogue après un délai
         Future.delayed(const Duration(seconds: 99), () {
           Navigator.of(context).pop(true);
         });
         return AlertDialog(
-          title: const Text("Erreur"),
-          content: Text(message),
+          backgroundColor: Colors.red, // Fond rouge pour les erreurs
+          title: const Text(
+            "Erreur", // Titre de la boîte de dialogue
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold), // Texte blanc en gras
+          ),
+          content: Text(
+            message, // Contenu de la boîte de dialogue
+            style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold), // Texte blanc en gras
+          ),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Fermer la boîte de dialogue
               },
-              child: const Text("OK"),
+              child: const Text(
+                "OK", // Texte du bouton
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold), // Texte blanc en gras
+              ),
             ),
           ],
         );
