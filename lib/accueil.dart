@@ -1,22 +1,16 @@
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'contact.dart';
 import 'connexion.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Réservation Mobile-Home',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: AccueilPage(),
     );
   }
@@ -72,34 +66,24 @@ class AccueilPage extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFFd9edf7),
         items: [
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ContactPage()),
-                );
-              },
-              child: Image.asset('assets/images/navigation/contact.png',
-                  width: 30),
-            ),
-            label: 'Contact',
-          ),
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ConnexionPage()),
-                );
-              },
-              child:
-                  Image.asset('assets/images/navigation/compte.png', width: 30),
-            ),
-            label: 'Connexion',
-          ),
+          navBarItem(context, 'assets/images/navigation/contact.png', 'Contact',
+              ContactPage()),
+          navBarItem(context, 'assets/images/navigation/compte.png',
+              'Connexion', ConnexionPage()),
         ],
       ),
+    );
+  }
+
+  BottomNavigationBarItem navBarItem(
+      BuildContext context, String imagePath, String label, Widget page) {
+    return BottomNavigationBarItem(
+      icon: GestureDetector(
+        onTap: () => Navigator.push(
+            context, MaterialPageRoute(builder: (context) => page)),
+        child: Image.asset(imagePath, width: 30),
+      ),
+      label: label,
     );
   }
 }

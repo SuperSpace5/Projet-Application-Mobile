@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'accueil.dart';
-import 'connexion.dart';
+import 'profil.dart';
 import 'config.dart';
 
 void main() {
@@ -14,10 +14,10 @@ void main() {
 class MyApp extends StatelessWidget {
   Future<dynamic> _delayedApiCheck() async {
     try {
-      await Future.delayed(const Duration(seconds: 3)); // Délai de 3 secondes
+      await Future.delayed(const Duration(seconds: 3));
       return _checkApiStatus();
     } catch (error) {
-      return error; // Retourne l'erreur si la vérification échoue
+      return error;
     }
   }
 
@@ -29,13 +29,12 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: FutureBuilder(
-        future: _delayedApiCheck(), // Utilisation de la fonction de délai
+        future: _delayedApiCheck(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const LoadingScreen(error: null);
           } else {
             if (snapshot.hasError) {
-              // Afficher la popup d'erreur directement sur la page de chargement
               return LoadingScreen(error: snapshot.error.toString());
             } else {
               final apiStatus = snapshot.data as bool?;
@@ -51,15 +50,13 @@ class MyApp extends StatelessWidget {
                     } else {
                       final hasAccountData = snapshot.data;
                       if (hasAccountData == null || !hasAccountData) {
-                        return SuccessPopup();
+                        return WelcomePopup();
                       } else {
-                        return FutureBuilder(
-                          future: _showAccountDataPopup(context),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<void> snapshot) {
-                            return Container(); // Placeholder widget, actual UI is built in _showAccountDataPopup
-                          },
-                        );
+                        _showWelcomeBackPopup(
+                            context); // Show welcome back popup if account data is available
+                        return const LoadingScreen(
+                            error:
+                                null); // Show loading screen until welcome back popup is displayed
                       }
                     }
                   },
@@ -91,35 +88,101 @@ class MyApp extends StatelessWidget {
     String? prenom = prefs.getString('prenom');
     return genre != null && nom != null && prenom != null;
   }
+}
 
-  Future<void> _showAccountDataPopup(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? genre = prefs.getString('genre');
+Future<void> _showWelcomePopup(BuildContext context) async {
+  showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Bienvenue'),
+        content: const Text('Bienvenue sur l\'application.'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => AccueilPage()),
+              );
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
-    if (genre == "M") {
-      genre = "Monsieur";
-    } else if (genre == "F") {
-      genre = "Madame";
-    }
+Future<void> _showWelcomeBackPopup(BuildContext context) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? genre = prefs.getString('genre');
+  if (genre == "M") {
+    genre = "Monsieur";
+  } else if (genre == "F") {
+    genre = "Madame";
+  }
+  String? nom = prefs.getString('nom');
+  String? prenom = prefs.getString('prenom');
+  String welcomeBackMessage =
+      'Bonjour $genre $nom $prenom. Veuillez-vous reconnecter.';
 
-    String? nom = prefs.getString('nom');
-    String? prenom = prefs.getString('prenom');
-    String welcomeMessage =
-        'Bonjour $genre $nom $prenom. Veuillez-vous reconnecter.';
+  showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Bonjour'),
+        content: Text(welcomeBackMessage),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilPage()),
+              );
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
-    return showDialog<void>(
+class WelcomePopup extends StatefulWidget {
+  @override
+  _WelcomePopupState createState() => _WelcomePopupState();
+}
+
+class _WelcomePopupState extends State<WelcomePopup> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showWelcomePopup(context);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const LoadingScreen(error: null);
+  }
+
+  void _showWelcomePopup(BuildContext context) {
+    showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Re-Bienvenue'),
-          content: Text(welcomeMessage),
+          title: const Text('Bienvenue'),
+          content: const Text('Bienvenue sur l\'application.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => ConnexionPage()),
+                  MaterialPageRoute(builder: (context) => AccueilPage()),
                 );
               },
               child: const Text('OK'),

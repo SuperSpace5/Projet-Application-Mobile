@@ -1,256 +1,159 @@
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, use_build_context_synchronously
-
-// Importations de packages Flutter
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:crypto/crypto.dart'; // Package pour le hachage des mots de passe
+import 'package:crypto/crypto.dart';
 import 'connexion.dart';
 import 'config.dart';
 
-// Fonction principale pour exécuter l'application Flutter
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
-// Classe principale de l'application, héritant de StatelessWidget
 class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Créer un compte', // Titre de l'application
-      theme: ThemeData(
-        primarySwatch: Colors.green, // Thème de l'application
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: CreerComptePage(), // Page d'accueil de l'application
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+        title: 'Créer un compte',
+        theme: ThemeData(primarySwatch: Colors.green),
+        home: CreerComptePage(),
+      );
 }
 
-// Page de création de compte de l'application, héritant de StatefulWidget
 class CreerComptePage extends StatefulWidget {
   @override
   _CreerComptePageState createState() => _CreerComptePageState();
 }
 
-// État de la page de création de compte de l'application
 class _CreerComptePageState extends State<CreerComptePage> {
-  // Contrôleurs pour les champs de texte
   final TextEditingController _nomController = TextEditingController();
   final TextEditingController _prenomController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _numeroController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  // Variable pour afficher ou masquer le mot de passe
   bool _showPassword = false;
-  // Variable pour stocker le genre (Homme ou Femme)
   String genre = '';
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Créer un compte', // Titre de la page
-          style:
-              TextStyle(fontWeight: FontWeight.bold), // Mise en gras du titre
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Créer un compte',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          backgroundColor: const Color(0xFFd9d9d9),
         ),
-        backgroundColor: const Color(0xFFd9d9d9), // Couleur de l'en-tête
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Container(
-            padding: const EdgeInsets.all(20.0),
-            width: 500.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 3,
-                  blurRadius: 7,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/logo.png', // Chemin de l'image du logo
-                      width: 300,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                // Sélection du genre (Masculin ou Féminin)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          genre = 'M';
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 20),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                          side: BorderSide(
-                              color: genre == 'M' ? Colors.blue : Colors.black),
-                        ),
-                      ),
-                      child: Text(
-                        'M',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: genre == 'M' ? Colors.blue : Colors.black,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          genre = 'F';
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 20),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                          side: BorderSide(
-                              color: genre == 'F' ? Colors.blue : Colors.black),
-                        ),
-                      ),
-                      child: Text(
-                        'F',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: genre == 'F' ? Colors.blue : Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                // Champ de texte pour le nom
-                TextField(
-                  controller: _nomController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nom :',
+        body: SingleChildScrollView(
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              width: 500.0,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5.0),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 3,
+                      blurRadius: 7,
+                      offset: const Offset(0, 3)),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/images/logo.png', width: 300),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 10),
-                // Champ de texte pour le prénom
-                TextField(
-                  controller: _prenomController,
-                  decoration: const InputDecoration(
-                    labelText: 'Prénom :',
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildGenderButton('M'),
+                      const SizedBox(width: 20),
+                      _buildGenderButton('F'),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 10),
-                // Champ de texte pour l'adresse email
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Adresse Email :',
-                  ),
-                  keyboardType: TextInputType.emailAddress, // Type de clavier
-                ),
-                const SizedBox(height: 10),
-                // Champ de texte pour le numéro de téléphone
-                TextField(
-                  controller: _numeroController,
-                  decoration: const InputDecoration(
-                    labelText: 'Numéro de Téléphone :',
-                  ),
-                  keyboardType: TextInputType.phone, // Type de clavier
-                ),
-                const SizedBox(height: 10),
-                // Champ de texte pour le mot de passe
-                TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Mot de passe :',
-                    suffixIcon: IconButton(
-                      icon: Icon(_showPassword
-                          ? Icons.visibility
-                          : Icons.visibility_off),
-                      onPressed: _togglePasswordVisibility,
-                    ),
-                  ),
-                  obscureText: !_showPassword,
-                ),
-                const SizedBox(height: 20),
-                // Bouton pour soumettre le formulaire
-                ElevatedButton(
-                  onPressed: () => _submitForm(context),
-                  child: const Text(
-                    'Confirmer', // Texte du bouton
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold), // Style du texte
-                  ),
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  _buildTextField(_nomController, 'Nom :'),
+                  const SizedBox(height: 10),
+                  _buildTextField(_prenomController, 'Prénom :'),
+                  const SizedBox(height: 10),
+                  _buildTextField(_emailController, 'Adresse Email :',
+                      keyboardType: TextInputType.emailAddress),
+                  const SizedBox(height: 10),
+                  _buildTextField(_numeroController, 'Numéro de Téléphone :',
+                      keyboardType: TextInputType.phone),
+                  const SizedBox(height: 10),
+                  _buildPasswordTextField(
+                      _passwordController, 'Mot de passe :'),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                      onPressed: _submitForm,
+                      child: const Text('Confirmer',
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
-  // Méthode pour basculer l'affichage du mot de passe
-  void _togglePasswordVisibility() {
-    setState(() {
-      _showPassword = !_showPassword;
-    });
-  }
+  ElevatedButton _buildGenderButton(String gender) => ElevatedButton(
+        onPressed: () => setState(() => genre = gender),
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18.0),
+              side: BorderSide(
+                  color: genre == gender ? Colors.blue : Colors.black)),
+        ),
+        child: Text(
+          gender,
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: genre == gender ? Colors.blue : Colors.black),
+        ),
+      );
 
-  // Méthode pour soumettre le formulaire
-  void _submitForm(BuildContext context) async {
-    // Récupération des valeurs des champs de texte
-    String nom = _nomController.text.trim();
-    String prenom = _prenomController.text.trim();
-    String email = _emailController.text.trim();
-    String numero = _numeroController.text.trim();
-    String password = _passwordController.text.trim();
+  TextField _buildTextField(TextEditingController controller, String labelText,
+          {TextInputType keyboardType = TextInputType.text}) =>
+      TextField(
+        controller: controller,
+        decoration: InputDecoration(labelText: labelText),
+        keyboardType: keyboardType,
+      );
 
-    // Hachage du mot de passe
-    String hashedPassword = _hashPassword(password);
+  TextField _buildPasswordTextField(
+          TextEditingController controller, String labelText) =>
+      TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: labelText,
+          suffixIcon: IconButton(
+            icon: Icon(_showPassword ? Icons.visibility : Icons.visibility_off),
+            onPressed: () => setState(() => _showPassword = !_showPassword),
+          ),
+        ),
+        obscureText: !_showPassword,
+      );
 
-    // URL de l'API pour la création de compte
-    String apiUrl = '$apiUrlo/account/creationCompte_form';
-
-    // Envoi du formulaire et réception du résultat
-    String resultCode = await _sendLoginForm(
+  void _submitForm() async {
+    final nom = _nomController.text.trim();
+    final prenom = _prenomController.text.trim();
+    final email = _emailController.text.trim();
+    final numero = _numeroController.text.trim();
+    final password = _passwordController.text.trim();
+    final hashedPassword = _hashPassword(password);
+    const apiUrl = '$apiUrlo/account/creationCompte_form';
+    final resultCode = await _sendLoginForm(
         genre, nom, prenom, email, numero, hashedPassword, apiUrl);
 
-    // Vérification du résultat et affichage des messages d'erreur
-    if (genre.isEmpty ||
-        nom.isEmpty ||
-        prenom.isEmpty ||
-        email.isEmpty ||
-        numero.isEmpty ||
-        hashedPassword.isEmpty) {
+    if ([genre, nom, prenom, email, numero, hashedPassword]
+        .any((element) => element.isEmpty)) {
       _showErrorDialog(context, "Veuillez remplir tous les champs");
     }
 
-    // Affichage des messages d'erreur en fonction du code de résultat
-    // (Les codes de résultat sont propres à votre application)
     if (resultCode == '0118') {
       _showSuccessDialog(context,
           "Le compte a été créé avec succès, veuillez cliquer sur le lien dans l'email que vous venez de recevoir");
@@ -283,131 +186,77 @@ class _CreerComptePageState extends State<CreerComptePage> {
     }
   }
 
-  // Méthode pour hacher le mot de passe
-  String _hashPassword(String password) {
-    List<int> bytes = utf8.encode(password);
-    Digest digest = sha256.convert(bytes);
-    return digest.toString();
-  }
+  String _hashPassword(String password) =>
+      sha256.convert(utf8.encode(password)).toString();
 
-  // Méthode pour envoyer le formulaire de création de compte à l'API
   Future<String> _sendLoginForm(String genre, String nom, String prenom,
       String email, String numero, String hashedPassword, String apiUrl) async {
     try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        body: {
-          'genre': genre,
-          'nom': nom,
-          'prenom': prenom,
-          'email': email,
-          'numero': numero,
-          'password': hashedPassword,
-        },
-      );
+      final response = await http.post(Uri.parse(apiUrl), body: {
+        'genre': genre,
+        'nom': nom,
+        'prenom': prenom,
+        'email': email,
+        'numero': numero,
+        'password': hashedPassword,
+      });
 
-      // Vérification du code de statut de la réponse
       if (response.statusCode == 200) {
-        // Décodage de la réponse JSON
         Map<String, dynamic> data = json.decode(response.body);
-        return data["info"]; // Renvoi des informations
+        return data["info"];
       } else {
-        // En cas d'erreur, lancer une exception avec le code de statut
         throw Exception(
             'Échec du chargement des données. Code d\'état : ${response.statusCode}');
       }
     } catch (e) {
-      // Gestion des erreurs
-      print(e);
       print('Erreur lors de l\'envoi du formulaire de connexion : $e');
-      return ''; // Renvoi d'une chaîne vide en cas d'erreur
+      return '';
     }
   }
 
-  // Méthode pour afficher une boîte de dialogue d'erreur
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // Fermer la boîte de dialogue après un délai
-        Future.delayed(const Duration(seconds: 99), () {
-          Navigator.of(context).pop(true);
-        });
-        return AlertDialog(
-          backgroundColor: Colors.red, // Fond rouge pour les erreurs
-          title: const Text(
-            "Erreur", // Titre de la boîte de dialogue
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold), // Texte blanc en gras
-          ),
-          content: Text(
-            message, // Contenu de la boîte de dialogue
-            style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold), // Texte blanc en gras
-          ),
+  void _showErrorDialog(BuildContext context, String message) => showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          backgroundColor: Colors.red,
+          title: const Text("Erreur",
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          content: Text(message,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Fermer la boîte de dialogue
-              },
-              child: const Text(
-                "OK", // Texte du bouton
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold), // Texte blanc en gras
-              ),
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("OK",
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ],
-        );
-      },
-    );
-  }
+        ),
+      );
 
-  void _showSuccessDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // Fermer la boîte de dialogue après un délai
-        Future.delayed(const Duration(seconds: 99), () {
-          Navigator.of(context).pop(true);
-          // Rediriger vers la page de connexion (connexion.dart)
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => ConnexionPage()));
-        });
-        return AlertDialog(
-          backgroundColor: Colors.green, // Fond vert pour les succès
-          title: const Text(
-            "Succès", // Titre de la boîte de dialogue
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold), // Texte blanc en gras
-          ),
-          content: Text(
-            message, // Contenu de la boîte de dialogue
-            style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold), // Texte blanc en gras
-          ),
+  void _showSuccessDialog(BuildContext context, String message) => showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          backgroundColor: Colors.green,
+          title: const Text("Succès",
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          content: Text(message,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Fermer la boîte de dialogue
-                // Rediriger vers la page de connexion (connexion.dart)
+                Navigator.of(context).pop();
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => ConnexionPage()));
               },
-              child: const Text(
-                "OK", // Texte du bouton
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold), // Texte blanc en gras
-              ),
+              child: const Text("OK",
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ],
-        );
-      },
-    );
-  }
+        ),
+      );
 }

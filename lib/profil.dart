@@ -31,10 +31,7 @@ class ProfilPage extends StatefulWidget {
 }
 
 class _ProfilPageState extends State<ProfilPage> {
-  String? _nom;
-  String? _prenom;
-  String? _genre;
-  String? _token;
+  String? _nom, _prenom, _genre, _token;
 
   @override
   void initState() {
@@ -47,14 +44,8 @@ class _ProfilPageState extends State<ProfilPage> {
     setState(() {
       _nom = prefs.getString('nom');
       _prenom = prefs.getString('prenom');
-      _genre = prefs.getString('genre');
+      _genre = prefs.getString('genre') == "M" ? "Monsieur" : "Madame";
       _token = prefs.getString('token');
-
-      if (_genre == "M") {
-        _genre = "Monsieur";
-      } else if (_genre == "F") {
-        _genre = "Madame";
-      }
     });
   }
 
@@ -81,9 +72,7 @@ class _ProfilPageState extends State<ProfilPage> {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({
-          'Token': _token,
-        }),
+        body: jsonEncode({'Token': _token}),
       );
 
       if (response.statusCode == 200) {
@@ -99,58 +88,40 @@ class _ProfilPageState extends State<ProfilPage> {
   }
 
   void _showErrorDialog(String message) {
+    _showDialog("Erreur", message, Colors.red);
+  }
+
+  void _showSuccessDialog(String message) {
+    _showDialog("Succès", message, Colors.green);
+  }
+
+  void _showDialog(String title, String message, Color backgroundColor) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // Fermer la boîte de dialogue après un délai
         Future.delayed(const Duration(seconds: 99), () {
           Navigator.of(context).pop(true);
         });
         return AlertDialog(
-          backgroundColor: Colors.red, // Fond rouge pour les erreurs
-          title: const Text(
-            "Erreur", // Titre de la boîte de dialogue
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold), // Texte blanc en gras
+          backgroundColor: backgroundColor,
+          title: Text(
+            title,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
           ),
           content: Text(
-            message, // Contenu de la boîte de dialogue
+            message,
             style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold), // Texte blanc en gras
+                color: Colors.white, fontWeight: FontWeight.bold),
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Fermer la boîte de dialogue
-              },
+              onPressed: () => Navigator.of(context).pop(),
               child: const Text(
-                "OK", // Texte du bouton
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold), // Texte blanc en gras
+                "OK",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showSuccessDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Succès"),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("OK"),
             ),
           ],
         );
@@ -196,83 +167,70 @@ class _ProfilPageState extends State<ProfilPage> {
         type: BottomNavigationBarType.fixed,
         backgroundColor: const Color(0xFFd9edf7),
         items: [
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ReservationPage()),
-                );
-              },
-              child: Image.asset('assets/images/navigation/reservation.png',
-                  width: 30),
-            ),
+          _bottomNavItem(
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ReservationPage())),
+            iconPath: 'assets/images/navigation/reservation.png',
             label: 'Réservations',
           ),
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ContactPage2()),
-                );
-              },
-              child: Image.asset('assets/images/navigation/contact.png',
-                  width: 30),
-            ),
+          _bottomNavItem(
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ContactPage2())),
+            iconPath: 'assets/images/navigation/contact.png',
             label: 'Contact',
           ),
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CodePage()),
-                );
-              },
-              child:
-                  Image.asset('assets/images/navigation/code.png', width: 30),
-            ),
+          _bottomNavItem(
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => CodePage())),
+            iconPath: 'assets/images/navigation/code.png',
             label: 'Accès MH',
           ),
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              onTap: () async {
-                bool logoutConfirmed = await showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Déconnexion'),
-                      content: const Text('Voulez-vous vous déconnecter ?'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(true);
-                          },
-                          child: const Text('Oui'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(false);
-                          },
-                          child: const Text('Non'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-
-                if (logoutConfirmed == true) {
-                  await _logout();
-                }
-              },
-              child:
-                  Image.asset('assets/images/navigation/logout.png', width: 30),
-            ),
+          _bottomNavItem(
+            onTap: _logoutPrompt,
+            iconPath: 'assets/images/navigation/logout.png',
             label: 'Logout',
           ),
         ],
       ),
     );
+  }
+
+  BottomNavigationBarItem _bottomNavItem(
+      {required Function() onTap,
+      required String iconPath,
+      required String label}) {
+    return BottomNavigationBarItem(
+      icon: GestureDetector(
+        onTap: onTap,
+        child: Image.asset(iconPath, width: 30),
+      ),
+      label: label,
+    );
+  }
+
+  void _logoutPrompt() async {
+    bool logoutConfirmed = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Déconnexion'),
+          content: const Text('Voulez-vous vous déconnecter ?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Oui'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Non'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (logoutConfirmed == true) {
+      await _logout();
+    }
   }
 }
