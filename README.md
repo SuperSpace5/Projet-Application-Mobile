@@ -1,5 +1,9 @@
 # Projet - Application Mobile
 
+## Version V1.4.2
+- Début Création Page de Chargement
+- Corrections mineures
+
 ## Version V1.4.1.1
 - Création d'une variable unique contenant l'adresse de l'API (dans le fichier config.dart)
 - Changement dans la vérification de "si le compte est actif ou non".
