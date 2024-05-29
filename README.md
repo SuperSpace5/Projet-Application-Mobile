@@ -1,5 +1,16 @@
 # Projet - Application Mobile
 
+## Version V1.4.3
+- Fin mise en place des pages de démarrage
+- Optimisation des pages
+	-> accueil.dart (139 l -> 123 l)
+	-> contact.dart et contact2.dart (86 l -> 62 l)
+	-> ping.dart (88 l -> 57 l)
+	-> connexion.dart (330 l -> 264 l)
+	-> creercompte.dart (414 l -> 263 l)
+	-> profil.dart (279 l -> 237 l)
+- Corrections mineures
+
 ## Version V1.4.2
 - Début Création Page de Chargement
 - Corrections mineures
