@@ -3,7 +3,6 @@ import 'package:mobile_home_and_paradise/accueil.dart';
 import 'package:mobile_home_and_paradise/config.dart';
 import 'package:mobile_home_and_paradise/reservations.dart';
 import 'contact2.dart';
-import 'code.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -77,6 +76,7 @@ class _ProfilPageState extends State<ProfilPage> {
 
       if (response.statusCode == 200) {
         final responseBody = jsonDecode(response.body);
+        print("Info: ${responseBody['info']}");
         _showSuccessDialog("Token envoyé avec succès: ${responseBody['info']}");
       } else {
         final responseBody = jsonDecode(response.body);
@@ -156,10 +156,6 @@ class _ProfilPageState extends State<ProfilPage> {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _sendToken,
-              child: const Text('Envoyer Token'),
-            ),
           ],
         ),
       ),
@@ -178,12 +174,6 @@ class _ProfilPageState extends State<ProfilPage> {
                 MaterialPageRoute(builder: (context) => ContactPage2())),
             iconPath: 'assets/images/navigation/contact.png',
             label: 'Contact',
-          ),
-          _bottomNavItem(
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (context) => CodePage())),
-            iconPath: 'assets/images/navigation/code.png',
-            label: 'Accès MH',
           ),
           _bottomNavItem(
             onTap: _logoutPrompt,

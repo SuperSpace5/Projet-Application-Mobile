@@ -10,7 +10,9 @@
 analyzer:
   errors:
     avoid_function_literals_in_foreach_calls: ignore
+    collection_methods_unrelated_type: ignore
     library_private_types_in_public_api: ignore
+    prefer_final_fields: ignore
     prefer_interpolation_to_compose_strings: ignore
     sort_child_properties_last: ignore
     unused_element: ignore

@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      debugShowCheckedModeBanner: false,
       home: FutureBuilder(
         future: _delayedApiCheck(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
