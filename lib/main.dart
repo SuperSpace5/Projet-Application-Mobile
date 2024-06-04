@@ -125,8 +125,7 @@ Future<void> _showWelcomeBackPopup(BuildContext context) async {
   }
   String? nom = prefs.getString('nom');
   String? prenom = prefs.getString('prenom');
-  String welcomeBackMessage =
-      'Bonjour $genre $nom $prenom. Veuillez-vous reconnecter.';
+  String welcomeBackMessage = 'Bonjour $genre $nom $prenom.';
 
   showDialog<void>(
     context: context,
@@ -169,30 +168,6 @@ class _WelcomePopupState extends State<WelcomePopup> {
   Widget build(BuildContext context) {
     return const LoadingScreen(error: null);
   }
-
-  void _showWelcomePopup(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Bienvenue'),
-          content: const Text('Bienvenue sur l\'application.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => AccueilPage()),
-                );
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
 
 class LoadingScreen extends StatelessWidget {
@@ -203,27 +178,48 @@ class LoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // Assure-toi d'ajouter le logo de ton application ici
-            Image.asset(
-              'assets/images/logo.png', // Remplace par le chemin correct de ton logo
-              height: 150,
-            ),
-            const SizedBox(height: 20),
-            if (error != null)
-              ErrorPopup(
-                  error:
-                      error), // Utiliser ErrorPopup pour afficher la pop-up d'erreur
-            if (error == null)
-              const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+      backgroundColor:
+          Colors.transparent, // Utilise la couleur transparente pour le fond
+      body: Stack(
+        children: <Widget>[
+          // Fond d'écran avec l'image "soleil.jpg"
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/fond_pages/soleil.jpg'),
+                fit: BoxFit.cover, // Ajuste la taille de l'image selon l'écran
               ),
-          ],
-        ),
+            ),
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                // Assure-toi d'ajouter le logo de ton application ici
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(20), // Coins arrondis
+                  ),
+                  padding: const EdgeInsets.all(20),
+                  child: Image.asset(
+                    'assets/images/logo.png', // Remplace par le chemin correct de ton logo
+                    height: 150,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                if (error != null)
+                  ErrorPopup(
+                      error:
+                          error), // Utilise ErrorPopup pour afficher la pop-up d'erreur
+                if (error == null)
+                  const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

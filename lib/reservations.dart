@@ -166,21 +166,30 @@ class _ReservationPageState extends State<ReservationPage> {
         ),
         backgroundColor: const Color(0xFFd9d9d9),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: _fetchReservations,
-              child: const Text('Récupérer les réservations'),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'assets/images/fond_pages/vh.jpg',
+            fit: BoxFit.cover,
+          ),
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                ElevatedButton(
+                  onPressed: _fetchReservations,
+                  child: const Text('Récupérer les réservations'),
+                ),
+                ElevatedButton(
+                  onPressed: updateAccountReservation,
+                  child: const Text(
+                      'Mettre à jour les réservations du compte utilisateur'),
+                ),
+                _buildReservationList(),
+              ],
             ),
-            ElevatedButton(
-              onPressed: updateAccountReservation,
-              child: const Text(
-                  'Mettre à jour les réservations du compte utilisateur'),
-            ),
-            _buildReservationList(),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -188,7 +197,12 @@ class _ReservationPageState extends State<ReservationPage> {
   Widget _buildReservationList() {
     if (_reservations.isEmpty) {
       return Container(
+        margin: const EdgeInsets.all(20),
         padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: const Text('Aucune réservation à afficher'),
       );
     }

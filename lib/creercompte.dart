@@ -38,63 +38,74 @@ class _CreerComptePageState extends State<CreerComptePage> {
               style: TextStyle(fontWeight: FontWeight.bold)),
           backgroundColor: const Color(0xFFd9d9d9),
         ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Container(
-              padding: const EdgeInsets.all(20.0),
-              width: 500.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5.0),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 3,
-                      blurRadius: 7,
-                      offset: const Offset(0, 3)),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/images/logo.png', width: 300),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildGenderButton('M'),
-                      const SizedBox(width: 20),
-                      _buildGenderButton('F'),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  _buildTextField(_nomController, 'Nom :'),
-                  const SizedBox(height: 10),
-                  _buildTextField(_prenomController, 'Prénom :'),
-                  const SizedBox(height: 10),
-                  _buildTextField(_emailController, 'Adresse Email :',
-                      keyboardType: TextInputType.emailAddress),
-                  const SizedBox(height: 10),
-                  _buildTextField(_numeroController, 'Numéro de Téléphone :',
-                      keyboardType: TextInputType.phone),
-                  const SizedBox(height: 10),
-                  _buildPasswordTextField(
-                      _passwordController, 'Mot de passe :'),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                      onPressed: _submitForm,
-                      child: const Text('Confirmer',
-                          style: TextStyle(fontWeight: FontWeight.bold))),
-                ],
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/fond_pages/mobilehome.jpg',
+                fit: BoxFit.cover,
               ),
             ),
-          ),
+            Center(
+              child: SingleChildScrollView(
+                child: Container(
+                  padding: const EdgeInsets.all(20.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey.withOpacity(0.8),
+                          spreadRadius: 3,
+                          blurRadius: 7,
+                          offset: const Offset(0, 3)),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset('assets/images/logo.png', width: 300),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildGenderButton('M'),
+                          const SizedBox(width: 20),
+                          _buildGenderButton('F'),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      _buildTextField(_nomController, 'Nom :'),
+                      const SizedBox(height: 10),
+                      _buildTextField(_prenomController, 'Prénom :'),
+                      const SizedBox(height: 10),
+                      _buildTextField(_emailController, 'Adresse Email :',
+                          keyboardType: TextInputType.emailAddress),
+                      const SizedBox(height: 10),
+                      _buildTextField(
+                          _numeroController, 'Numéro de Téléphone :',
+                          keyboardType: TextInputType.phone),
+                      const SizedBox(height: 10),
+                      _buildPasswordTextField(
+                          _passwordController, 'Mot de passe :'),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                          onPressed: _submitForm,
+                          child: const Text('Confirmer',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       );
 
@@ -103,7 +114,7 @@ class _CreerComptePageState extends State<CreerComptePage> {
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18.0),
+              borderRadius: BorderRadius.circular(20),
               side: BorderSide(
                   color: genre == gender ? Colors.blue : Colors.black)),
         ),

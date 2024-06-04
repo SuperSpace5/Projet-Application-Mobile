@@ -67,7 +67,11 @@ flutter:
     - assets/images/navigation/reservation.png
     - assets/images/navigation/parametres.png
     - assets/images/navigation/logout.png
-    - assets/images/contact/tour.jpg
+    - assets/images/fond_pages/tour.jpg
+    - assets\images\fond_pages\couleur-ciel.jpeg
+    - assets\images\fond_pages\soleil.jpg
+    - assets\images\fond_pages\mobilehome.jpg
+    - assets\images\fond_pages\vh.jpg
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

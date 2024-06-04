@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'creercompte.dart';
-import 'mdpoublie.dart';
 import 'profil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'config.dart';
@@ -52,83 +51,101 @@ class _ConnexionPageState extends State<ConnexionPage> {
         ),
         backgroundColor: const Color(0xFFd9d9d9),
       ),
-      body: Center(
-        child: Container(
-          padding: const EdgeInsets.all(20.0),
-          width: 500.0,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 3,
-                blurRadius: 7,
-                offset: const Offset(0, 3),
-              ),
-            ],
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/fond_pages/mobilehome.jpg',
+              fit: BoxFit.cover,
+            ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset('assets/images/logo.png', width: 300),
-              const SizedBox(height: 20),
-              const Text(
-                'Connexion',
-                style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email :'),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Mot de passe :',
-                  suffixIcon: IconButton(
-                    icon: Icon(_showPassword
-                        ? Icons.visibility
-                        : Icons.visibility_off),
-                    onPressed: () =>
-                        setState(() => _showPassword = !_showPassword),
-                  ),
-                ),
-                obscureText: !_showPassword,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => _submitForm(context),
-                child: const Text('Se connecter',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () =>
-                        _navigateToPage(context, MotDePasseOubliePage()),
-                    child: const Text('Mot de passe oublié',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                  ElevatedButton(
-                    onPressed: () =>
-                        _navigateToPage(context, CreerComptePage()),
-                    child: const Text('Créer un compte',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+          Center(
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              width: 500.0,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.8),
+                    spreadRadius: 3,
+                    blurRadius: 7,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
-            ],
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/logo.png', width: 300),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Connexion',
+                    style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: 'Email :'),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Mot de passe :',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () =>
+                            setState(() => _showPassword = !_showPassword),
+                      ),
+                    ),
+                    obscureText: !_showPassword,
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => _submitForm(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                        ),
+                        child: const Text(
+                          'Se connecter',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      ElevatedButton(
+                        onPressed: () =>
+                            _navigateToPage(context, CreerComptePage()),
+                        child: const Text(
+                          'Créer un compte',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -236,28 +253,4 @@ class _ConnexionPageState extends State<ConnexionPage> {
       MaterialPageRoute(builder: (context) => page),
     );
   }
-}
-
-void _showErrorDialog(BuildContext context, String message) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        backgroundColor: Colors.red,
-        title: const Text("Erreur",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: Text(message,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("OK",
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
-          ),
-        ],
-      );
-    },
-  );
 }

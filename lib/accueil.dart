@@ -31,37 +31,61 @@ class AccueilPage extends StatelessWidget {
         ),
         backgroundColor: const Color(0xFFd9d9d9),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            Image.asset('assets/images/logo.png', width: 300),
-            const SizedBox(height: 20),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              color: Colors.lightBlueAccent,
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: VideoPlayerWidget(),
-              ),
+      body: Stack(
+        children: [
+          Image.asset(
+            'assets/images/fond_pages/couleur-ciel.jpeg',
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+          ),
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+                Container(
+                  decoration: BoxDecoration(
+                    color:
+                        Colors.white.withOpacity(0.8), // Fond blanc transparent
+                    borderRadius: BorderRadius.circular(10), // Bords arrondis
+                  ),
+                  child: Image.asset('assets/images/logo.png', width: 300),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color:
+                        Colors.white.withOpacity(0.8), // Fond blanc transparent
+                    borderRadius: BorderRadius.circular(10), // Bords arrondis
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: VideoPlayerWidget(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(20), // Bords arrondis
+                  ),
+                  padding: const EdgeInsets.all(20),
+                  child: const Text(
+                    'Bienvenue sur notre application mobile !\n\nConnectez-vous pour avoir accès\n à votre Mobile-Home',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 19,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
-            const SizedBox(height: 20),
-            Container(
-              color: Colors.lightBlue,
-              padding: const EdgeInsets.all(20),
-              child: const Text(
-                'Bienvenue sur notre application mobile !\n\nConnectez-vous pour avoir accès\n à votre Mobile-Home',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 19,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFFd9edf7),
