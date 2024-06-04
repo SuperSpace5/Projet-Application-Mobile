@@ -201,7 +201,7 @@ class _ReservationPageState extends State<ReservationPage> {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.8),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: const Text('Aucune réservation à afficher'),
       );

@@ -32,12 +32,16 @@ class ContactPage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          Image.asset(
-            'assets/images/contact/tour.jpg',
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
+          // Background Image
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/fond_pages/tour.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
+          // Content
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

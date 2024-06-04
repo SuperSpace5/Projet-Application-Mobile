@@ -67,7 +67,7 @@ flutter:
     - assets/images/navigation/reservation.png
     - assets/images/navigation/parametres.png
     - assets/images/navigation/logout.png
-    - assets/images/fond_pages/tour.jpg
+    - assets\images\fond_pages\tour.jpg
     - assets\images\fond_pages\couleur-ciel.jpeg
     - assets\images\fond_pages\soleil.jpg
     - assets\images\fond_pages\mobilehome.jpg
