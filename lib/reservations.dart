@@ -14,7 +14,7 @@ class Reservation {
   final String startDate;
   final String endDate;
   final String porteCode;
-  final bool isActive;
+  bool isActive;
 
   Reservation({
     required this.id,
@@ -85,7 +85,7 @@ class _ReservationPageState extends State<ReservationPage> {
     try {
       final response = await Dio().post(
         apiUrl,
-        data: {'Token': token},
+        data: jsonEncode({'Token': token}),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
@@ -122,7 +122,7 @@ class _ReservationPageState extends State<ReservationPage> {
     try {
       final response = await Dio().post(
         apiUrlo + "/mobile/Reservation",
-        data: {'Token': token},
+        data: jsonEncode({'Token': token}),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
@@ -148,6 +148,110 @@ class _ReservationPageState extends State<ReservationPage> {
       print(
           'Erreur lors de la mise à jour des réservations du compte utilisateur: $e');
     }
+  }
+
+  Future<void> _cancelReservation(String startDate) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token == null) {
+      print('Token non trouvé');
+      return;
+    }
+
+    String apiUrl = apiUrlo + "/mobile/Reservation/Annulation";
+
+    try {
+      final response = await Dio().post(
+        apiUrl,
+        data: jsonEncode({'Token': token, 'start_date': startDate}),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final responseJson = response.data;
+        if (responseJson['info'] == '0405') {
+          setState(() {
+            for (var reservation in _reservations) {
+              if (reservation.startDate == startDate) {
+                reservation.isActive = false;
+                break;
+              }
+            }
+          });
+          _showDialog('Annulation réussie');
+        } else {
+          _showDialog('Erreur: ${responseJson['info']}');
+        }
+      } else {
+        _showDialog('Erreur lors de l\'annulation: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showDialog('Erreur réseau: $e');
+    }
+  }
+
+  void _showDialog(String message) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button to close the dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Notification'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showCancelConfirmationDialog(String startDate) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Annuler la réservation'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Voulez-vous vraiment annuler la réservation ?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Non'),
+            ),
+            TextButton(
+              onPressed: () {
+                _cancelReservation(startDate);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Oui'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -177,13 +281,14 @@ class _ReservationPageState extends State<ReservationPage> {
             child: Column(
               children: [
                 ElevatedButton(
-                  onPressed: _fetchReservations,
-                  child: const Text('Récupérer les réservations'),
-                ),
-                ElevatedButton(
-                  onPressed: updateAccountReservation,
+                  onPressed: () {
+                    _fetchReservations();
+                    updateAccountReservation();
+                  },
                   child: const Text(
-                      'Mettre à jour les réservations du compte utilisateur'),
+                    'Actualiser',
+                    style: TextStyle(fontSize: 18), // Taille du texte agrandie
+                  ),
                 ),
                 _buildReservationList(),
               ],
@@ -241,12 +346,13 @@ class _ReservationPageState extends State<ReservationPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'Porte: ${reservation.porteCode}',
-                  style: const TextStyle(
-                    fontSize: 16,
+                if (reservation.isActive)
+                  Text(
+                    'Code Porte : ${reservation.porteCode}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
                   ),
-                ),
                 const SizedBox(height: 8),
                 Text(
                   reservation.isActive ? 'Active' : 'Annulée',
@@ -256,12 +362,25 @@ class _ReservationPageState extends State<ReservationPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'ID: ${reservation.id}',
-                  style: const TextStyle(
-                    fontSize: 16,
+                if (reservation.isActive)
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      textStyle: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () => _showCancelConfirmationDialog(reservation
+                        .startDate), // Appel de la popup de confirmation
+                    child: const Text(
+                      'Annuler',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
